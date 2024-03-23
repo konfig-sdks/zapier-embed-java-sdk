@@ -1,0 +1,4195 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: contact@zapier.com
+    name: Zapier
+    url: https://help.zapier.com/hc/en-us
+  description: The Zapier Embed API.
+  title: Zapier Embed API
+  version: 1.0.0
+  x-api-id: 370df4a0-2f97-4972-873f-eef6ac607531
+  x-audience: external-partner
+  x-konfig-ignore:
+    potential-incorrect-type: true
+servers:
+- description: Production
+  url: https://api.zapier.com/v2
+tags:
+- description: Endpoints or functions that leverage Actions.
+  name: Actions
+- description: Endpoints or functions that leverage Authentications.
+  name: Authentications
+- description: Endpoints or functions that leverage Zaps.
+  name: Zaps
+- description: Endpoints or functions that leverage Apps.
+  name: Apps
+- description: Endpoints or functions under this category are in the experimental
+    phase.
+  name: Experimental
+paths:
+  /actions:
+    get:
+      description: |-
+        Fetch the available actions for the provided App. It's typical to filter by type so that only actions that make sense for a particular step are shown. For example only showing reads for the first step in a Zap.
+
+        This endpoint requires the `zap` OAuth scope.
+
+        This API is rate limited by IP address (60 requests per min), or partner (150 requests per min), whichever occurs first.
+      operationId: Actions_listAvailableActions
+      parameters:
+      - description: "A canonical App ID, as provided by the `/apps` endpoint."
+        explode: true
+        in: query
+        name: app
+        required: true
+        schema:
+          example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+          format: uuid
+          type: string
+          x-konfig-original-example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+          x-konfig-generated-schema: konfig-generated-schema-components-parameters-app-schema
+        style: form
+      - description: The type of Action to filter for.
+        explode: true
+        in: query
+        name: action_type
+        required: true
+        schema:
+          enum:
+          - READ
+          - WRITE
+          example: READ
+          type: string
+          x-konfig-original-example: READ
+          x-konfig-generated-schema: konfig-generated-schema-components-parameters-action_type-schema
+        style: form
+      responses:
+        "200":
+          content:
+            application/vnd.api+json:
+              examples:
+                ActionsExample:
+                  value:
+                    links:
+                      next: null
+                      prev: null
+                    meta:
+                      limit: 10
+                      offset: 0
+                      count: 1
+                    data:
+                    - title: New Lead
+                      description: Triggers when a new lead is added to SuperExampleCRM
+                      type: action
+                      id: uag:1f188536-6dd0-4172-8414-2b90914ddee9
+                      key: new_lead
+                      action_type: READ
+                      app: 83b47c0e-adda-44da-a45d-42565fe521ef
+                      is_instant: true
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActionsResponse'
+          description: A valid response for fetching available actions for the App.
+        "404":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions404Response'
+          description: Not found
+          x-do-not-generate: true
+        "406":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions406Response'
+          description: This request is invalid.
+          x-do-not-generate: true
+        "415":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions415Response'
+          description: This media type is unsupported.
+          x-do-not-generate: true
+        default:
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActionsdefaultResponse'
+          description: An unexpected error has occurred but details are available.
+      summary: Get Actions
+      tags:
+      - Actions
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--actions
+      x-accepts: application/vnd.api+json
+  /authentications:
+    get:
+      description: |-
+        Fetch the available Authentications for the provided App. This will only return Authentications that are owned by the user and not those that are shared with them, since it''s not possible to create Zaps with Authentications you don''t own.
+
+        This endpoint requires the `authentication` OAuth scope.
+
+        This API is rate limited by IP address (60 requests per min), or partner (150 requests per min), whichever occurs first.
+      operationId: Authentications_getAvailable
+      parameters:
+      - description: "A canonical App ID, as provided by the `/apps` endpoint."
+        explode: true
+        in: query
+        name: app
+        required: true
+        schema:
+          example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+          format: uuid
+          type: string
+          x-konfig-original-example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+          x-konfig-generated-schema: konfig-generated-schema-components-parameters-app-schema
+        style: form
+      - description: "Used for paginating results. Specifies the maximum number of\
+          \ items to return per page. If this value is not set, it defaults to 10."
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 10
+          example: 10
+          type: integer
+          x-konfig-original-example: 10
+          x-konfig-generated-schema: konfig-generated-schema-components-parameters-limit-schema
+        style: form
+      - description: Used for paginating results. Specifies the offset to use.
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/vnd.api+json:
+              examples:
+                AuthenticationsExample:
+                  value:
+                    links:
+                      next: null
+                      prev: null
+                    meta:
+                      limit: 10
+                      offset: 0
+                      count: 1
+                    data:
+                    - title: SuperExampleCRM (example@zapier.com)
+                      type: authentication
+                      id: b3eYnwl
+                      app: b61ae76e-487b-4622-8679-df3d3e20bccc
+                      is_expired: false
+              schema:
+                $ref: '#/components/schemas/AuthenticationsGetAvailableResponse'
+          description: A successful request to get available Authentications for the
+            provided App.
+        "404":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions404Response'
+          description: Not found
+          x-do-not-generate: true
+        "406":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions406Response'
+          description: This request is invalid.
+          x-do-not-generate: true
+        "415":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions415Response'
+          description: This media type is unsupported.
+          x-do-not-generate: true
+        default:
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActionsdefaultResponse'
+          description: An unexpected error has occurred but details are available.
+      summary: Get Authentications
+      tags:
+      - Authentications
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--authentications
+      x-accepts: application/vnd.api+json
+    post:
+      description: |-
+        Creates a new Authentication for the provided App.
+
+        This endpoint requires the `authentication:write` OAuth scope.
+
+        This API is rate limited by IP address (60 requests per min), or partner (150 requests per min), whichever occurs first.
+      operationId: Authentications_createNewAuthentication
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationsCreateNewAuthenticationRequest'
+        description: Inputs to create a new Authentication
+        required: true
+      responses:
+        "201":
+          content:
+            application/vnd.api+json:
+              examples:
+                AuthenticationsExample:
+                  value:
+                    links:
+                      next: null
+                      prev: null
+                    meta:
+                      limit: 10
+                      offset: 0
+                      count: 1
+                    data:
+                    - title: SuperExampleCRM (example@zapier.com)
+                      type: authentication
+                      id: b3eYnwlX
+                      app: b61ae76e-487b-4622-8679-df3d3e20bccc
+                      is_expired: false
+              schema:
+                $ref: '#/components/schemas/AuthenticationsCreateNewAuthenticationResponse'
+          description: A successful response to create a new Authentication
+        "406":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions406Response'
+          description: This request is invalid.
+          x-do-not-generate: true
+        "415":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions415Response'
+          description: This media type is unsupported.
+          x-do-not-generate: true
+        default:
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActionsdefaultResponse'
+          description: An unexpected error has occurred but details are available.
+      summary: Create Authentication
+      tags:
+      - Authentications
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--authentications
+      x-content-type: application/vnd.api+json
+      x-accepts: application/vnd.api+json
+  /actions/{action}/inputs:
+    post:
+      description: |-
+        Get the Input Fields for a particular Action, using the provided authentication and inputs.
+
+        This endpoint requires the `zap:write` OAuth scope.
+
+        This API is rate limited by IP address (60 requests per min), or partner (150 requests per min), whichever occurs first.
+      operationId: Actions_getInputFields
+      parameters:
+      - description: "An Action ID, as provided by the `/actions` endpoint."
+        explode: false
+        in: path
+        name: action
+        required: true
+        schema:
+          example: uag:87b1c14e-ef30-43d5-9395-6c6514dbb123
+          type: string
+          x-konfig-original-example: uag:87b1c14e-ef30-43d5-9395-6c6514dbb123
+          x-konfig-generated-schema: konfig-generated-schema-components-parameters-action-schema
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/Inputs'
+      responses:
+        "200":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsGetInputFieldsResponse'
+          description: A successful response for getting the input fields for a particular
+            Action.
+        "404":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions404Response'
+          description: Not found
+          x-do-not-generate: true
+        "406":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions406Response'
+          description: This request is invalid.
+          x-do-not-generate: true
+        "415":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions415Response'
+          description: This media type is unsupported.
+          x-do-not-generate: true
+        default:
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActionsdefaultResponse'
+          description: An unexpected error has occurred but details are available.
+      summary: Get Input Fields
+      tags:
+      - Actions
+      x-internal: false
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--actions-action-inputs
+      x-content-type: application/vnd.api+json
+      x-accepts: application/vnd.api+json
+  /actions/{action}/outputs:
+    post:
+      description: |-
+        Get the Output Fields for a particular Action, using the provided authentication and inputs.
+
+        This endpoint requires the `zap:write` OAuth scope.
+
+        This API is rate limited by IP address (60 requests per min).
+      operationId: Actions_getOutputFields
+      parameters:
+      - description: "An Action ID, as provided by the `/actions` endpoint."
+        explode: false
+        in: path
+        name: action
+        required: true
+        schema:
+          example: uag:87b1c14e-ef30-43d5-9395-6c6514dbb123
+          type: string
+          x-konfig-original-example: uag:87b1c14e-ef30-43d5-9395-6c6514dbb123
+          x-konfig-generated-schema: konfig-generated-schema-components-parameters-action-schema
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/Outputs'
+      responses:
+        "200":
+          content:
+            application/vnd.api+json:
+              examples:
+                OutputFieldsExample:
+                  value:
+                    meta:
+                      limit: 10
+                      offset: 0
+                      count: 1
+                    data:
+                    - title: First Name
+                      type: output_field
+                      id: first_name
+                      sample: Wade
+              schema:
+                $ref: '#/components/schemas/ActionsGetOutputFieldsResponse'
+          description: A successful request to get the Output Fields for an Action.
+        "404":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions404Response'
+          description: Not found
+          x-do-not-generate: true
+        "406":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions406Response'
+          description: This request is invalid.
+          x-do-not-generate: true
+        "415":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions415Response'
+          description: This media type is unsupported.
+          x-do-not-generate: true
+        default:
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActionsdefaultResponse'
+          description: An unexpected error has occurred but details are available.
+      summary: Get Output Fields
+      tags:
+      - Actions
+      x-internal: false
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--actions-action-outputs
+      x-content-type: application/vnd.api+json
+      x-accepts: application/vnd.api+json
+  /actions/{action}/inputs/{input}/choices:
+    post:
+      description: |-
+        Get the possible values for an Input Field that is marked as `SELECT`.
+
+        This endpoint requires the `zap` OAuth scope.
+
+        This API is rate limited by IP address (60 requests per min), or partner (150 requests per min), whichever occurs first.
+      operationId: Actions_getChoices
+      parameters:
+      - description: "An Action ID, as provided by the `/actions` endpoint."
+        explode: false
+        in: path
+        name: action
+        required: true
+        schema:
+          example: uag:87b1c14e-ef30-43d5-9395-6c6514dbb123
+          type: string
+          x-konfig-original-example: uag:87b1c14e-ef30-43d5-9395-6c6514dbb123
+          x-konfig-generated-schema: konfig-generated-schema-paths--actions-action-inputs-input-choices-parameters-0-schema
+        style: simple
+      - description: "An Input Field ID, as provided by the `/inputs` endpoint."
+        explode: false
+        in: path
+        name: input
+        required: true
+        schema:
+          example: lead_id
+          type: string
+          x-konfig-original-example: lead_id
+          x-konfig-generated-schema: konfig-generated-schema-paths--actions-action-inputs-input-choices-parameters-1-schema
+        style: simple
+      - description: "The page of choices to return, defaults to the first"
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: "1"
+          example: "1"
+          type: string
+          x-konfig-original-example: "1"
+          x-konfig-generated-schema: konfig-generated-schema-paths--actions-action-inputs-input-choices-post-parameters-0-schema
+        style: form
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/ActionsGetChoicesRequest'
+        description: ""
+      responses:
+        "200":
+          content:
+            application/vnd.api+json:
+              examples:
+                GetChoicesExample:
+                  value:
+                    meta:
+                      page: 10
+                    data:
+                    - type: choice
+                      id: usa
+                      label: United States of America
+                      value: usa
+              schema:
+                $ref: '#/components/schemas/ActionsGetChoicesResponse'
+          description: A successful response for getting the requested Input Fields.
+        "404":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions404Response'
+          description: Not found
+          x-do-not-generate: true
+        "406":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions406Response'
+          description: This request is invalid.
+          x-do-not-generate: true
+        "415":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions415Response'
+          description: This media type is unsupported.
+          x-do-not-generate: true
+        default:
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActionsdefaultResponse'
+          description: An unexpected error has occurred but details are available.
+      summary: Get Choices
+      tags:
+      - Actions
+      x-internal: false
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--actions-action-inputs-input-choices
+      x-content-type: application/vnd.api+json
+      x-accepts: application/vnd.api+json
+  /apps:
+    get:
+      description: |-
+        This endpoint returns a list of popular apps.  Keep in mind that Zapier built-in apps will not be returned and the order of the result is by app popularity.
+
+        This endpoint requires the `zap` OAuth scope.
+
+        This API is rate limited by IP address (60 requests per min), or partner (150 requests per min), whichever occurs first.
+      operationId: Apps_listPopular
+      parameters:
+      - description: Used for paginating results. Specifies the amount of apps to
+          return.
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Used for paginating results. Specifies the offset of the apps
+          to return.
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: |-
+          Categories that apps must have in order to be returned in the response. E.g. Accounting (`accounting`), AI Tools (`ai-tools`), and All (`all`).
+          The full list of valid categories can be retrieved using the `category` endpoint, detailed [here](https://platform.zapier.com/embed/partner-api#get-v1categories).
+        explode: true
+        in: query
+        name: category
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Parameter to limit the results to apps whose titles match the
+          provided query.
+        explode: true
+        in: query
+        name: query
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Parameter to restrict the results to apps whose ID matches those
+          in the provided comma-separated value. Cannot be combined with `category`.
+        explode: true
+        in: query
+        name: ids
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/vnd.api+json:
+              examples:
+                GetAppsExample:
+                  value:
+                    data:
+                    - title: HubSpot
+                      description: HubSpot is your all-in-one stop for all of your
+                        marketing software needs.
+                      type: app
+                      id: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaa
+                      categories:
+                      - slug: partners
+                      hex_color: 8bcbca
+                      image: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+                      images:
+                        url_16x16: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+                        url_32x32: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+                        url_64x64: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+                        url_128x128: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+                      links:
+                        connect_new_authentication: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+                    links:
+                      next: https://api.zapier.com/v2/apps?offset=20&limit=10
+                      prev: https://api.zapier.com/v2/apps?offset=0&limit=10
+                    meta:
+                      limit: 10
+                      offset: 10
+                      count: 133
+              schema:
+                $ref: '#/components/schemas/AppsListPopularResponse'
+          description: OK
+        "401":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/AppsListPopular401Response'
+          description: Unauthorized
+          x-do-not-generate: true
+        default:
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActionsdefaultResponse'
+          description: An unexpected error has occurred but details are available.
+      security:
+      - OAuth2: []
+      summary: Get Apps
+      tags:
+      - Apps
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--apps
+      x-accepts: application/vnd.api+json
+  /zap-runs:
+    get:
+      description: |-
+        This endpoint is a first version tool that delivers basic yet essential details about their executed Zap runs. As an evolving interface, this first version serves foundational information about Zap runs.
+
+        _However, it's important to note that this is an initial implementation and the **response payload is not definitive**. Our aim is to continually iterate and enhance this API, refining its capabilities and data output, to progressively deliver more valuable and useful information in future versions._
+
+        This endpoint requires the `zap:runs` OAuth scope.
+
+        This API is rate limited by IP address (60 requests per min), or partner (150 requests per min), whichever occurs first.
+
+        Please note that since this is an experimental tool, if you're interested in gaining access, you must contact our support team.
+      operationId: Experimental_getZapRuns
+      parameters:
+      - description: "Find Zap runs equal to or newer than this date. If not provided,\
+          \ results default to last 30 days' Zap Runs."
+        explode: true
+        in: query
+        name: from_date
+        required: false
+        schema:
+          example: 2024-01-01T10:09:08.07
+          type: string
+          x-konfig-original-example: 2024-01-01T10:09:08.07
+          x-konfig-generated-schema: konfig-generated-schema-paths--zap-runs-get-parameters-0-schema
+        style: form
+      - description: Find Zap runs less than this date.
+        explode: true
+        in: query
+        name: to_date
+        required: false
+        schema:
+          example: 2023-01-02T11:10:09.08
+          type: string
+          x-konfig-original-example: 2023-01-02T11:10:09.08
+          x-konfig-generated-schema: konfig-generated-schema-paths--zap-runs-get-parameters-1-schema
+        style: form
+      - description: Find Zap runs for the specified Zap ID.
+        explode: true
+        in: query
+        name: zap_id
+        required: false
+        schema:
+          example: 001fa849-dc8e-aca6-a09b-ba705bceada1
+          type: string
+          x-konfig-original-example: 001fa849-dc8e-aca6-a09b-ba705bceada1
+          x-konfig-generated-schema: konfig-generated-schema-paths--zap-runs-get-parameters-2-schema
+        style: form
+      - description: Maximum number of returned Zap Runs.
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          example: 10
+          type: integer
+          x-konfig-original-example: 10
+          x-konfig-generated-schema: konfig-generated-schema-paths--zap-runs-get-parameters-3-schema
+        style: form
+      - description: Number of Zap Runs to skip.
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          example: 10
+          type: integer
+          x-konfig-original-example: 10
+          x-konfig-generated-schema: konfig-generated-schema-paths--zap-runs-get-parameters-4-schema
+        style: form
+      - description: "Performs a text search against the `zap_title`, `data_in`, and\
+          \ `data_out` fields, returning only zap runs that match the specified keywords."
+        explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          maxLength: 150
+          type: string
+        style: form
+      - description: "Accepts one or more status values separated by commas, enabling\
+          \ the filtering of zap runs based on the specified status or statuses provided."
+        explode: true
+        in: query
+        name: statuses
+        required: false
+        schema:
+          enum:
+          - delayed
+          - scheduled
+          - pending
+          - error
+          - error_handled
+          - halted
+          - throttled
+          - held
+          - filtered
+          - skipped
+          - success
+          example: throttled
+          type: string
+          x-konfig-original-example: throttled
+          x-konfig-generated-schema: konfig-generated-schema-paths--zap-runs-get-parameters-6-schema
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentalGetZapRunsResponse'
+          description: OK
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentalGetZapRuns401Response'
+          description: Unauthorized
+          x-do-not-generate: true
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentalGetZapRuns403Response'
+          description: Forbidden
+          x-do-not-generate: true
+      summary: Get Zap Runs
+      tags:
+      - Experimental
+      x-internal: false
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--zap-runs
+      x-accepts: application/json
+  /zaps:
+    get:
+      description: |-
+        This endpoint returns a list of Zaps for the authenticated Zapier user.
+
+        The `expand` array can be used to expand selected fields into full objects in the response.  Inputs with keys can also be passed to filter Zaps by certain criteria.
+
+        This endpoint requires the `zap` OAuth scope.
+
+        This API is rate limited by IP address (60 requests per min), or partner (150 requests per min), whichever occurs first.
+      operationId: Zaps_getFilteredZaps
+      parameters:
+      - description: Used for paginating results. Specifies the amount of apps to
+          return
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Used for paginating results. Specifies the offset of the apps
+          to return
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+        style: form
+      - allowReserved: true
+        description: "You may pass inputs[KEY]=VALUE1,VALUE2 to filter for Zaps that\
+          \ contain those settings. For example, if your OAuth app is Trello you may\
+          \ filter for Zaps that contain a certain Trello board using inputs[board]=BOARD_ID\
+          \ — Keys are defined by your app on the developer platform."
+        explode: false
+        in: query
+        name: inputs
+        required: false
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+        style: deepObject
+      - description: "A comma separated list of Zap fields that should be expanded\
+          \ from ids to full objects in the response. If a field may not be expanded,\
+          \ its encoded form will be returned instead."
+        explode: true
+        in: query
+        name: expand
+        required: false
+        schema:
+          example: steps.action
+          type: string
+          x-konfig-original-example: steps.action
+          x-konfig-generated-schema: konfig-generated-schema-paths--zaps-get-parameters-3-schema
+        style: form
+      responses:
+        "200":
+          content:
+            application/vnd.api+json:
+              examples:
+                GetZapsExample:
+                  value:
+                    links:
+                      next: https://api.zapier.com/v2/zaps?offset=20&limit=10
+                      prev: https://api.zapier.com/v2/zaps?offset=0&limit=10
+                    meta:
+                      limit: 10
+                      offset: 10
+                      count: 133
+                    data:
+                    - title: My Zap
+                      type: zap
+                      id: 00000000-0000-c000-8000-000000012345
+                      is_enabled: false
+                      last_successful_run_date: 2019-08-24T14:15:22Z
+                      steps:
+                      - action: uag:1f188536-6dd0-4172-8414-2b90914ddee9
+                        inputs:
+                          deal_stage: CLOSED_WON
+                        authentication: b3eYnwl
+                      - action: uag:1f188536-6dd0-4172-8414-2b90914ddaa7
+                        inputs:
+                          full_name: "{{customer__full_name}}"
+                        authentication: BRn9rRg
+                      links:
+                        html_editor: https://zapier.com/webintent/edit-zap/00000000-0000-c000-8000-000000012345
+                      updated_at: 2019-08-24T14:15:22Z
+              schema:
+                $ref: '#/components/schemas/ZapsGetFilteredZapsResponse'
+          description: OK
+        "401":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ZapsGetFilteredZaps401Response'
+          description: Unauthorized
+          x-do-not-generate: true
+        "403":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ZapsGetFilteredZaps403Response'
+          description: Forbidden
+          x-do-not-generate: true
+        default:
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActionsdefaultResponse'
+          description: An unexpected error has occurred but details are available.
+      summary: Get Zaps
+      tags:
+      - Zaps
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-get--zaps
+      x-accepts: application/vnd.api+json
+    post:
+      description: |-
+        This URL creates a new Zap based on a series of steps and a given title. `is_enabled` must be set to true when creating a new Zap.
+
+        This endpoint requires the `zap:write` OAuth scope.
+
+        This API is rate limited by IP address (60 requests per min), or partner (150 requests per min), whichever occurs first.
+      operationId: Zaps_createZap
+      parameters:
+      - description: "A comma separated list of Zap fields that should be expanded\
+          \ from ids to full objects in the response. If a field may not be expanded,\
+          \ its encoded form will be returned instead."
+        explode: true
+        in: query
+        name: expand
+        required: false
+        schema:
+          type: string
+        style: form
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/ZapsCreateZapRequest'
+        description: ""
+      responses:
+        "201":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ZapsCreateZapResponse'
+          description: Created
+        default:
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActionsdefaultResponse'
+          description: An unexpected error has occurred but details are available.
+      summary: Create a Zap
+      tags:
+      - Zaps
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--zaps
+      x-content-type: application/vnd.api+json
+      x-accepts: application/vnd.api+json
+  /actions/{action}/test:
+    post:
+      description: |-
+        Tests the action (step) in the third party api, using the provided authentication and inputs. On a successful test returns 200 and the result of executing the action, otherwise it returns a 400 and details about the failure.
+
+        This endpoint requires the `zap:write` OAuth scope.
+
+        This API is rate limited by IP address (60 requests per min).
+      operationId: Actions_testActionExecution
+      parameters:
+      - description: "An Action ID, as provided by the `/actions` endpoint."
+        explode: false
+        in: path
+        name: action
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/TestAction'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionsTestActionExecutionResponse'
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsTestActionExecution200Response'
+          description: OK
+        "404":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions404Response'
+          description: Not found
+          x-do-not-generate: true
+        "406":
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/ActionsListAvailableActions406Response'
+          description: This request is invalid.
+          x-do-not-generate: true
+      summary: Test an action (step)
+      tags:
+      - Actions
+      x-stoplight:
+        id: fgw9khltcrahx
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--actions-action-test
+      x-content-type: application/vnd.api+json
+      x-accepts: application/json
+components:
+  parameters:
+    limit:
+      description: "Used for paginating results. Specifies the maximum number of items\
+        \ to return per page. If this value is not set, it defaults to 10."
+      explode: true
+      in: query
+      name: limit
+      required: false
+      schema:
+        default: 10
+        example: 10
+        type: integer
+        x-konfig-original-example: 10
+        x-konfig-generated-schema: konfig-generated-schema-components-parameters-limit-schema
+      style: form
+    offset:
+      description: Used for paginating results. Specifies the offset to use.
+      explode: true
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+      style: form
+    app:
+      description: "A canonical App ID, as provided by the `/apps` endpoint."
+      explode: true
+      in: query
+      name: app
+      required: true
+      schema:
+        example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+        format: uuid
+        type: string
+        x-konfig-original-example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+        x-konfig-generated-schema: konfig-generated-schema-components-parameters-app-schema
+      style: form
+    action:
+      description: "An Action ID, as provided by the `/actions` endpoint."
+      explode: false
+      in: path
+      name: action
+      required: true
+      schema:
+        example: uag:87b1c14e-ef30-43d5-9395-6c6514dbb123
+        type: string
+        x-konfig-original-example: uag:87b1c14e-ef30-43d5-9395-6c6514dbb123
+        x-konfig-generated-schema: konfig-generated-schema-components-parameters-action-schema
+      style: simple
+    action_type:
+      description: The type of Action to filter for.
+      explode: true
+      in: query
+      name: action_type
+      required: true
+      schema:
+        enum:
+        - READ
+        - WRITE
+        example: READ
+        type: string
+        x-konfig-original-example: READ
+        x-konfig-generated-schema: konfig-generated-schema-components-parameters-action_type-schema
+      style: form
+  requestBodies:
+    Inputs:
+      content:
+        application/vnd.api+json:
+          examples: {}
+          schema:
+            $ref: '#/components/schemas/ActionsGetInputFieldsRequest'
+      description: Common inputs with inputs and an authentication id.
+    Outputs:
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/ActionsGetOutputFieldsRequest'
+      description: "Common inputs with inputs, an authentication id and a parameter\
+        \ to optionally retrieve live samples for the field"
+    TestAction:
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/ActionsTestActionExecutionRequest'
+      description: "Authentication id and inputs (such as `worksheet`, `spreadsheet`\
+        \ for google sheets, `text` and `channel` for slack) used to test the action."
+  responses:
+    DefaultError:
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/ActionsListAvailableActionsdefaultResponse'
+      description: An unexpected error has occurred but details are available.
+    FourOhSixError:
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/ActionsListAvailableActions406Response'
+      description: This request is invalid.
+      x-do-not-generate: true
+    FourFifteenError:
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/ActionsListAvailableActions415Response'
+      description: This media type is unsupported.
+      x-do-not-generate: true
+    FourOhFourError:
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/ActionsListAvailableActions404Response'
+      description: Not found
+      x-do-not-generate: true
+  schemas:
+    InputsWithAuthenticationId:
+      description: The common data object that includes inputs and an authentication
+        id.
+      properties:
+        authentication:
+          description: "An Authentication ID, as provided by the `/authentications`\
+            \ endpoint."
+          x-stoplight:
+            id: x4243l2r0sn61
+        inputs:
+          description: "The current set of input fields in a JSON object, where each\
+            \ key is the `id` of an Input Field, and the corresponding value the current\
+            \ value of the field."
+          type: object
+        limit:
+          description: Used for paginating results. Specifies the maximum number of
+            items to return per page.
+          format: int32
+          type: integer
+        offset:
+          description: Used for paginating results. Specifies the offset to use.
+          format: int32
+          type: integer
+      required:
+      - authentication
+      - inputs
+      type: object
+    InputsWithAuthenticationIdAndFetchLiveSamples:
+      description: The common data object that includes inputs and an authentication
+        id.
+      properties:
+        authentication:
+          description: "An Authentication ID, as provided by the `/authentications`\
+            \ endpoint."
+        inputs:
+          description: "The current set of input fields in a JSON object, where each\
+            \ key is the `id` of an Input Field, and the corresponding value the current\
+            \ value of the field."
+          type: object
+        fetch_live_samples:
+          default: false
+          description: Whether to retrieve live samples for the field
+          example: false
+          type: boolean
+          x-stoplight:
+            id: sztwd2jml2g66
+          x-konfig-original-example: false
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InputsWithAuthenticationIdAndFetchLiveSamples-properties-fetch_live_samples
+      required:
+      - authentication
+      - inputs
+      title: InputsWithAuthenticationIdAndFetchLiveSamples
+      type: object
+      x-stoplight:
+        id: slf9f11zlbpep
+    Links:
+      description: The links object returned in paginated response bodies.
+      example:
+        next: https://api.zapier.com/v2/apps?offset=20&limit=10
+        prev: https://api.zapier.com/v2/apps?offset=0&limit=10
+      properties:
+        next:
+          default: null
+          description: The URL of the next page of paginated results.
+          example: https://api.zapier.com/v2/apps?offset=20&limit=10
+          format: uri
+          nullable: true
+          pattern: ^https:\/\/api\.zapier\.com\/.*
+          readOnly: true
+          x-stoplight:
+            id: w5nhbvv8b1r4r
+          x-konfig-original-example: https://api.zapier.com/v2/apps?offset=20&limit=10
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Links-properties-next
+        prev:
+          default: null
+          description: The URL of the previous page of paginated results.
+          example: https://api.zapier.com/v2/apps?offset=0&limit=10
+          format: uri
+          nullable: true
+          pattern: ^https:\/\/api\.zapier\.com\/.*
+          readOnly: true
+          x-stoplight:
+            id: 3rs1teh1vdfoz
+          x-konfig-original-example: https://api.zapier.com/v2/apps?offset=0&limit=10
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Links-properties-prev
+      title: Links
+      type: object
+      x-stoplight:
+        id: g3mw8odxd2a5b
+    Meta:
+      description: The meta object returned in paginated response bodies.
+      example:
+        offset: 10
+        limit: 10
+        count: 133
+      properties:
+        limit:
+          description: The limit value used in the request.
+          example: 10
+          format: int32
+          minimum: 1
+          readOnly: true
+          type: integer
+          x-stoplight:
+            id: 2fm9jmi21w2gp
+          x-konfig-original-example: 10
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Meta-properties-limit
+        offset:
+          default: 0
+          description: The offset value used in the request.
+          example: 10
+          format: int32
+          minimum: 0
+          type: integer
+          x-stoplight:
+            id: eio99why05ylu
+          x-konfig-original-example: 10
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Meta-properties-offset
+        count:
+          description: The total number of objects in the collection represented by
+            the endpoint.
+          example: 133
+          format: int32
+          minimum: 0
+          readOnly: true
+          type: integer
+          x-stoplight:
+            id: nh8w20vy7kwk4
+          x-konfig-original-example: 133
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Meta-properties-count
+      title: Meta
+      type: object
+      x-stoplight:
+        id: msk45ygr2wrc8
+    LinksWithPage:
+      description: The links object returned in paginated response bodies.
+      properties:
+        next:
+          default: null
+          description: The URL of the next page of paginated results.
+          example: https://api.zapier.com/v2/actions/core:abcd/inputs/lead_id/choices?page=3
+          format: uri
+          nullable: true
+          pattern: ^https:\/\/api\.zapier\.com\/.*
+          readOnly: true
+          x-stoplight:
+            id: 1qw4ipgciehf5
+          x-konfig-original-example: https://api.zapier.com/v2/actions/core:abcd/inputs/lead_id/choices?page=3
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-LinksWithPage-properties-next
+        prev:
+          default: null
+          description: The URL of the previous page of paginated results.
+          example: https://api.zapier.com/v2/actions/core:abcd/inputs/lead_id/choices?page=1
+          format: uri
+          nullable: true
+          pattern: ^https:\/\/api\.zapier\.com\/.*
+          readOnly: true
+          x-stoplight:
+            id: 00b22pohany81
+          x-konfig-original-example: https://api.zapier.com/v2/actions/core:abcd/inputs/lead_id/choices?page=1
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-LinksWithPage-properties-prev
+      title: LinksWithPage
+      type: object
+      x-stoplight:
+        id: xzqnni6w46yxz
+    MetaWithPage:
+      description: "The meta object returned in paginated response bodies, for results\
+        \ using cursor pagination."
+      properties:
+        page:
+          default: 1
+          description: The page of results requested
+          example: 10
+          format: int32
+          readOnly: true
+          type: integer
+          x-stoplight:
+            id: u85us29cgmyin
+          x-konfig-original-example: 10
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-MetaWithPage-properties-page
+      title: MetaWithPage
+      type: object
+      x-stoplight:
+        id: ltgg98ltcua97
+    InputsWithAuthenticationIdNoPage:
+      example:
+        authentication: BRn9rRg
+        inputs:
+          text: Hi there
+          channel: U036WM3E84D
+      properties:
+        authentication:
+          description: "An Authentication ID, as provided by the `/authentications`\
+            \ endpoint."
+          example: BRn9rRg
+          x-stoplight:
+            id: xnxoa9djz4t00
+          x-konfig-original-example: BRn9rRg
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-InputsWithAuthenticationIdNoPage-properties-authentication
+        inputs:
+          description: "The current set of input fields in a JSON object, where each\
+            \ key is the `id` of an Input Field, and the corresponding value the current\
+            \ value of the field."
+          type: object
+          x-stoplight:
+            id: b03fuc0a4gv7j
+      title: InputsWithAuthenticationIdNoPage
+      type: object
+      x-stoplight:
+        id: hngkbpz9wble3
+      x-examples:
+      - authentication: BRn9rRg
+        inputs:
+          text: Hi there
+          channel: U036WM3E84D
+      - authentication: BRn9rRg
+        inputs:
+          spreadsheet: 1eM41g5BqFpGi1O2BTlc7cA_MNj2mujLJ_QNRwuWQ-rc
+          worksheet: "0"
+      x-konfig-original-example:
+        authentication: BRn9rRg
+        inputs:
+          text: Hi there
+          channel: U036WM3E84D
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-InputsWithAuthenticationIdNoPage
+    ZapRun:
+      example:
+        start_time: 2023-12-01T06:29:10.36Z
+        end_time: 2023-12-01T06:29:10.36Z
+        id: 00946041-b63b-a34c-9c30-630c32f0c3a4
+        zap_title: Zap Title - New Item
+        steps:
+        - start_time: 2023-12-01T06:29:15.870509Z
+          status: delayed
+        - start_time: 2023-12-01T06:29:15.870509Z
+          status: delayed
+        data_out: data_out
+        status: delayed
+        data_in: data_in
+      properties:
+        id:
+          description: Zap Run Identifier.
+          example: 00946041-b63b-a34c-9c30-630c32f0c3a4
+          format: uuid
+          type: string
+          x-konfig-original-example: 00946041-b63b-a34c-9c30-630c32f0c3a4
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-ZapRun-properties-id
+        start_time:
+          description: The specific time when the Zap Run was initiated.
+          example: 2023-12-01T06:29:10.36Z
+          format: date-time
+          readOnly: true
+          type: string
+          x-konfig-original-example: 2023-12-01T06:29:10.360000+00:00
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-ZapRun-properties-start_time
+        end_time:
+          description: The specific time when the Zap Run was finished.
+          example: 2023-12-01T06:29:10.36Z
+          format: date-time
+          readOnly: true
+          type: string
+          x-konfig-original-example: 2023-12-01T06:29:10.360000+00:00
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-ZapRun-properties-end_time
+        status:
+          description: Represents the current state or progress of the Zap Run
+          enum:
+          - delayed
+          - scheduled
+          - pending
+          - error
+          - halted
+          - throttled
+          - held
+          - filtered
+          - skipped
+          - success
+          readOnly: true
+          type: string
+        zap_title:
+          description: Refers to the name or title of the specific Zap that the run
+            is associated with.
+          example: Zap Title - New Item
+          readOnly: true
+          type: string
+          x-konfig-original-example: Zap Title - New Item
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-ZapRun-properties-zap_title
+        steps:
+          description: The list of sequential actions or processes involved in the
+            execution of the associated Zap run.
+          items:
+            $ref: '#/components/schemas/ZapRunStep'
+          type: array
+        data_in:
+          description: The information about the data inputted into and logged out
+            from a specific Zap Run during its execution.
+          type: string
+        data_out:
+          description: The information logged out from a specific Zap Run during its
+            execution.
+          type: string
+      title: ZapRun
+      type: object
+    ZapRunStep:
+      example:
+        start_time: 2023-12-01T06:29:15.870509Z
+        status: delayed
+      properties:
+        status:
+          description: Represents the current state or progress of the Zap Run Step.
+          enum:
+          - delayed
+          - scheduled
+          - pending
+          - error
+          - halted
+          - throttled
+          - held
+          - filtered
+          - skipped
+          - success
+          readOnly: true
+          type: string
+        start_time:
+          description: The specific time when the execution of the step in the Zap
+            run began.
+          example: 2023-12-01T06:29:15.870509Z
+          format: date-time
+          readOnly: true
+          type: string
+          x-konfig-original-example: 2023-12-01T06:29:15.870509+00:00
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-ZapRunStep-properties-start_time
+      title: ZapRunStep
+      type: object
+    Action:
+      description: "An Action is an operation that can be performed against a third-party\
+        \ API; either a read or a write. A Zap is composed of a read, followed by\
+        \ one or more writes."
+      example:
+        title: New Lead
+        description: Triggers when a new lead is added to SuperExampleCRM
+        type: action
+        id: uag:1f188536-6dd0-4172-8414-2b90914ddee9X
+        key: new_lead
+        action_type: READ
+        app: 83b47c0e-adda-44da-a45d-42565fe521ef
+        is_instant: false
+      properties:
+        title:
+          description: The title of this Action.
+          example: New Lead
+          type: string
+          x-stoplight:
+            id: 8cjkleeohsp4c
+          x-konfig-original-example: New Lead
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Action-properties-title
+        description:
+          description: "A longer description of this Action, usually describing what\
+            \ it does in more detail."
+          example: Triggers when a new lead is added to SuperExampleCRM
+          type: string
+          x-stoplight:
+            id: p1x8q39uuar4o
+          x-konfig-original-example: Triggers when a new lead is added to SuperExampleCRM
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Action-properties-description
+        type:
+          description: The type of this object.
+          example: action
+          readOnly: true
+          type: string
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Action-properties-type
+        id:
+          example: uag:1f188536-6dd0-4172-8414-2b90914ddee9
+          pattern: "^[\\w-]+:[\\w-]+$"
+          type: string
+          x-stoplight:
+            id: 13o2l55kldo76
+          x-konfig-original-example: uag:1f188536-6dd0-4172-8414-2b90914ddee9
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Action-properties-id
+        key:
+          description: The developer provided identifier for this Action.
+          example: new_lead
+          type: string
+          x-stoplight:
+            id: 65d0qb3nozmz3
+          x-konfig-original-example: new_lead
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Action-properties-key
+        action_type:
+          description: The type of this Action.
+          enum:
+          - READ
+          - WRITE
+          example: READ
+          type: string
+          x-stoplight:
+            id: upjghxsarpry4
+          x-konfig-original-example: READ
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Action-properties-action_type
+        app: {}
+        is_instant:
+          description: Will be set to `true` if this Action triggers instantly. May
+            only be `true` when `type` is `READ`.
+          example: false
+          type: boolean
+          x-stoplight:
+            id: xey6l2w9qt818
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Action-properties-is_instant
+      required:
+      - action_type
+      - app
+      - description
+      - id
+      - is_instant
+      - key
+      - title
+      - type
+      title: Action
+      type: object
+      x-stoplight:
+        id: 08691ffzj6wm3
+      x-internal: false
+      x-examples:
+      - title: New Lead
+        description: Triggers when a new lead is added to SuperExampleCRM
+        type: action
+        id: uag:1f188536-6dd0-4172-8414-2b90914ddee9X
+        key: new_lead
+        action_type: READ
+        app: 83b47c0e-adda-44da-a45d-42565fe521ef
+        is_instant: false
+      - title: New Deal
+        description: Triggers when a new deal is created.
+        type: action
+        id: uag:1f188536-6dd0-4172-8414-2b90914ddea7
+        key: new_deal
+        action_type: READ
+        app: 83b47c0e-adda-44da-a45d-42565fe521ef
+        is_instant: false
+      - title: New Deal
+        description: Triggers when a new deal is created.
+        type: action
+        id: uag:1f188536-6dd0-4172-8414-2b90914ddea7
+        key: new_deal
+        action_type: READ
+        app:
+          title: HubSpot
+          description: HubSpot is your all-in-one stop for all of your marketing software
+            needs.
+          type: app
+          id: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaa
+          links:
+            connect_new_authentication: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+          categories:
+          - slug: marketing-automation
+          image: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+          images:
+            url_16x16: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+            url_32x32: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+            url_64x64: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+            url_128x128: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+          hex_color: 8bcbca
+        is_instant: true
+      x-konfig-original-example:
+        title: New Lead
+        description: Triggers when a new lead is added to SuperExampleCRM
+        type: action
+        id: uag:1f188536-6dd0-4172-8414-2b90914ddee9X
+        key: new_lead
+        action_type: READ
+        app: 83b47c0e-adda-44da-a45d-42565fe521ef
+        is_instant: false
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-Action
+    App:
+      description: An app that integrates with Zapier.
+      example:
+        title: HubSpot
+        description: HubSpot is your all-in-one stop for all of your marketing software
+          needs.
+        type: app
+        id: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaaX
+        categories:
+        - slug: marketing-automation
+        hex_color: 8bcbca
+        image: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+        images:
+          url_16x16: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+          url_32x32: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+          url_64x64: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+          url_128x128: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+        links:
+          connect_new_authentication: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+      properties:
+        title:
+          description: Human readable name of the app
+          example: HubSpot
+          type: string
+          x-konfig-original-example: HubSpot
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-App-properties-title
+        description:
+          description: Human readable description of the app.
+          example: HubSpot is your all-in-one stop for all of your marketing software
+            needs.
+          type: string
+          x-konfig-original-example: HubSpot is your all-in-one stop for all of your
+            marketing software needs.
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-App-properties-description
+        type:
+          description: The type of this object.
+          example: app
+          readOnly: true
+          type: string
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-App-properties-type
+        id:
+          description: Unique id of the app
+          example: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaa
+          format: uuid
+          type: string
+          x-konfig-original-example: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaa
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-App-properties-id
+        categories:
+          description: A list of categories to which this app belongs. Helpful in
+            identifying apps by type and functionality.
+          items:
+            $ref: '#/components/schemas/App_categories_inner'
+          type: array
+        hex_color:
+          description: A branded color that can be used to represent the app.
+          example: 8bcbca
+          pattern: "^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+          type: string
+          x-stoplight:
+            id: 9zj29g5ib8afy
+          x-konfig-original-example: 8bcbca
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-App-properties-hex_color
+        image:
+          description: Default image/icon to represent the app.
+          example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+          format: uri
+          type: string
+          x-konfig-original-example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-App-properties-image
+        images:
+          $ref: '#/components/schemas/App_images'
+        links:
+          $ref: '#/components/schemas/App_links'
+      required:
+      - id
+      - type
+      title: App
+      type: object
+      x-stoplight:
+        id: vuqdljvf1dkfx
+      x-examples:
+      - title: HubSpot
+        description: HubSpot is your all-in-one stop for all of your marketing software
+          needs.
+        type: app
+        id: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaaX
+        categories:
+        - slug: marketing-automation
+        hex_color: 8bcbca
+        image: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+        images:
+          url_16x16: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+          url_32x32: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+          url_64x64: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+          url_128x128: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+        links:
+          connect_new_authentication: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+      - title: Pipedrive
+        description: Pipedrive is sales pipeline and CRM software for deal makers.
+          Get super-organized. Close deals in less time. iOS and Android apps let
+          you take your pipeline with you anywhere.
+        type: app
+        id: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbbb
+        categories:
+        - slug: crm
+        hex_color: "414143"
+        image: https://zapier-images.imgix.net/storage/developer/a70589f8db6a514b6820267b506409f0.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+        images:
+          url_16x16: https://zapier-images.imgix.net/storage/developer/a70589f8db6a514b6820267b506409f0.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+          url_32x32: https://zapier-images.imgix.net/storage/developer/a70589f8db6a514b6820267b506409f0.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+          url_64x64: https://zapier-images.imgix.net/storage/developer/a70589f8db6a514b6820267b506409f0.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+          url_128x128: https://zapier-images.imgix.net/storage/developer/a70589f8db6a514b6820267b506409f0.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+        links:
+          connect_new_authentication: https://zapier.com/engine/auth/start/slackAPI?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+      x-konfig-original-example:
+        title: HubSpot
+        description: HubSpot is your all-in-one stop for all of your marketing software
+          needs.
+        type: app
+        id: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaaX
+        categories:
+        - slug: marketing-automation
+        hex_color: 8bcbca
+        image: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+        images:
+          url_16x16: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+          url_32x32: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+          url_64x64: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+          url_128x128: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+        links:
+          connect_new_authentication: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-App
+    Authentication:
+      description: "An Authentication contains various fields, often credentials such\
+        \ as API tokens, used to access Partner APIs on behalf of a user. The actual\
+        \ fields are held securely by Zapier."
+      example:
+        title: SuperExampleCRM (example@zapier.com)
+        type: authentication
+        id: b3eYnwlX
+        app: b61ae76e-487b-4622-8679-df3d3e20bccc
+        is_expired: false
+      properties:
+        title:
+          example: SuperExampleCRM (example@zapier.com)
+          type: string
+          x-stoplight:
+            id: 9hh287r6y8kc5
+          x-konfig-original-example: SuperExampleCRM (example@zapier.com)
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Authentication-properties-title
+        type:
+          description: The type of this object.
+          example: authentication
+          readOnly: true
+          type: string
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Authentication-properties-type
+        id:
+          example: b3eYnwl
+          pattern: ^\w+
+          type: string
+          x-stoplight:
+            id: vjo26hmiyyinb
+          x-konfig-original-example: b3eYnwl
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Authentication-properties-id
+        app: {}
+        is_expired:
+          description: "If `true`, this Authentication has expired. It will not be\
+            \ usable, and the user needs to be directed to reconnect it."
+          example: false
+          readOnly: true
+          type: boolean
+          x-stoplight:
+            id: 5upf21yg6jvup
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Authentication-properties-is_expired
+      required:
+      - app
+      - id
+      - is_expired
+      - title
+      - type
+      title: Authentication
+      type: object
+      x-stoplight:
+        id: oglwzigsyobyg
+      x-examples:
+      - title: SuperExampleCRM (example@zapier.com)
+        type: authentication
+        id: b3eYnwlX
+        app: b61ae76e-487b-4622-8679-df3d3e20bccc
+        is_expired: false
+      - title: Hubspot (example@zapier.com)
+        type: authentication
+        id: BRn9rRg
+        app:
+          title: HubSpot
+          description: HubSpot is your all-in-one stop for all of your marketing software
+            needs.
+          type: app
+          id: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaa
+          categories:
+          - slug: marketing-automation
+          hex_color: 8bcbca
+          image: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+          images:
+            url_16x16: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+            url_32x32: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+            url_64x64: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+            url_128x128: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+          links:
+            connect_new_authentication: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+        is_expired: false
+      x-konfig-original-example:
+        title: SuperExampleCRM (example@zapier.com)
+        type: authentication
+        id: b3eYnwlX
+        app: b61ae76e-487b-4622-8679-df3d3e20bccc
+        is_expired: false
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-Authentication
+    Choice:
+      description: "A single element from a set of Choices, variants in an enumeration.\
+        \ For example, selecting a country of residence in a dropdown of many available\
+        \ countries."
+      example:
+        type: choice
+        id: usaX
+        label: United States of America
+        value: usa
+      properties:
+        type:
+          description: The type of this object.
+          example: choice
+          readOnly: true
+          type: string
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Choice-properties-type
+        id:
+          description: The ID of this variant.
+          example: usa
+          readOnly: true
+          type: string
+          x-konfig-original-example: usa
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Choice-properties-id
+        label:
+          description: "An optional human-readable label for this variant. Useful\
+            \ if the actual value is not a human-readable value, such as an identifier."
+          example: United States of America
+          type: string
+          x-stoplight:
+            id: 5o6snntc752sb
+          x-konfig-original-example: United States of America
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Choice-properties-label
+        value:
+          description: The value of this variant.
+          example: usa
+          type: string
+          x-stoplight:
+            id: luo7utbtozgta
+          x-konfig-original-example: usa
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Choice-properties-value
+      required:
+      - id
+      - type
+      - value
+      title: Choice
+      type: object
+      x-stoplight:
+        id: lq9c04jbpe7a1
+      x-internal: false
+      x-examples:
+      - type: choice
+        id: usaX
+        label: United States of America
+        value: usa
+      - type: choice
+        id: can
+        label: Canada
+        value: can
+      - type: choice
+        id: mex
+        label: Mexico
+        value: mex
+      x-konfig-original-example:
+        type: choice
+        id: usaX
+        label: United States of America
+        value: usa
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-Choice
+    Fieldset:
+      description: A grouping of Input Fields and Info Fields. Usually displayed together
+        under the provided heading.
+      properties:
+        title:
+          description: The human readable title for this group of fields.
+          example: Invoice
+          type: string
+          x-stoplight:
+            id: pi0vkrs14gvuw
+          x-konfig-original-example: Invoice
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Fieldset-properties-title
+        type:
+          description: The type of this object.
+          readOnly: true
+          type: string
+        id:
+          example: invoice
+          type: string
+          x-stoplight:
+            id: zcpcw8q2cwpua
+          x-konfig-original-example: invoice
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Fieldset-properties-id
+        fields:
+          items:
+            $ref: '#/components/schemas/IField'
+          minItems: 0
+          type: array
+          x-stoplight:
+            id: xxeeq1r8znmkr
+      required:
+      - fields
+      - id
+      - title
+      - type
+      title: Fieldset
+      type: object
+      x-stoplight:
+        id: hhdrvc5sgwy4m
+    Info-Field:
+      description: "A field that is intended to display some useful information to\
+        \ the user. Often some longer form direction on how to configure further Input\
+        \ Fields, or restrictions imposed by the third party API."
+      properties:
+        description:
+          description: A markdown formatted piece of text that provides helpful information
+            to the user.
+          example: Note that you can _only_ respond within 24 hours of a message sent
+            by a user.
+          type: string
+          x-stoplight:
+            id: n4pc37fsx9n6j
+          x-konfig-original-example: Note that you can _only_ respond within 24 hours
+            of a message sent by a user.
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Info-Field-properties-description
+        type:
+          description: The type of this object.
+          readOnly: true
+          type: string
+        id:
+          example: response_msg
+          type: string
+          x-stoplight:
+            id: hfp093gscz2lp
+          x-konfig-original-example: response_msg
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Info-Field-properties-id
+      required:
+      - description
+      - id
+      - type
+      title: Info Field
+      type: object
+      x-stoplight:
+        id: 22g4l4bd4w92z
+    Input-Field:
+      description: "A field that is an input to an Action, often eventually used to\
+        \ form the HTTP request that is made to a Partner API."
+      example:
+        title: Organisation
+        description: Which organisation should new leads come from.
+        type: input_field
+        id: organisation
+        default_value: My Organisation
+        depends_on:
+        - workspace
+        invalidates_input_fields: true
+        is_required: true
+        placeholder: Type your Organisation name here!
+        value_type: STRING
+      properties:
+        title:
+          description: The title of this Input Field
+          example: Organisation
+          type: string
+          x-stoplight:
+            id: jwgnpz282do20
+          x-konfig-original-example: Organisation
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-title
+        description:
+          description: "A longer markdown formatted description of this Input Field,\
+            \ often containing helpful hints on how to fill this particular field\
+            \ in."
+          example: Which organisation should new leads come from.
+          type: string
+          x-stoplight:
+            id: hrthwkkkz1ee9
+          x-konfig-original-example: Which organisation should new leads come from.
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-description
+        type:
+          description: The type of this object.
+          enum:
+          - input_field
+          - info_field
+          - fieldset
+          example: input_field
+          readOnly: true
+          type: string
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-type
+        id:
+          example: organisation
+          type: string
+          x-stoplight:
+            id: ptld3gl2q0z84
+          x-konfig-original-example: organisation
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-id
+        default_value:
+          description: The default value of this Input Field
+          example: My Organisation
+          type: string
+          x-konfig-original-example: My Organisation
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-default_value
+        depends_on:
+          description: "An array of ids that this field has a dependency on. If the\
+            \ value of these fields changes, the value of this field is no longer\
+            \ valid."
+          items:
+            example: workspace
+            type: string
+            x-stoplight:
+              id: e8nq7zmnf1yp0
+            x-konfig-original-example: workspace
+            x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-depends_on-items
+          type: array
+          x-stoplight:
+            id: g08w2x7p8m8j0
+        format:
+          description: "An optional formatting hint, only provided when the `value_type`\
+            \ field is `STRING`. Useful for displaying more friendly inputs to a user.\
+            \ If the format is `SELECT`, you are expected to fetch the possible Choices\
+            \ from the `/choices` endpoint."
+          enum:
+          - DATETIME
+          - MULTILINE
+          - PASSWORD
+          - CODE
+          - FILE
+          - SELECT
+          example: MULTILINE
+          type: string
+          x-stoplight:
+            id: 26jrzyp6b8qte
+          x-konfig-original-example: MULTILINE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-format
+        invalidates_input_fields:
+          description: "If true, changes to this field invalidate the presence of\
+            \ all other fields for this action and they must be refetched."
+          example: true
+          type: boolean
+          x-stoplight:
+            id: 6dmhtkigi6928
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-invalidates_input_fields
+        is_required:
+          description: "If true, this field must be filled in for the action to execute."
+          example: true
+          type: boolean
+          x-stoplight:
+            id: cf6yq2dcpjoik
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-is_required
+        items:
+          $ref: '#/components/schemas/Input_Field_items'
+        placeholder:
+          description: A placeholder for this Input Field.
+          example: Type your Organisation name here!
+          type: string
+          x-konfig-original-example: Type your Organisation name here!
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-placeholder
+        value_type:
+          description: The type of this Input Field. The `OBJECT` type accepts a flat
+            key-value dictionary where the values can only be strings. The `ARRAY`
+            type accepts an array of values - see `items` for the type. All other
+            types accept string values.
+          enum:
+          - STRING
+          - NUMBER
+          - INTEGER
+          - BOOLEAN
+          - ARRAY
+          - OBJECT
+          example: STRING
+          type: string
+          x-stoplight:
+            id: h9w5rc9ncwdqg
+          x-konfig-original-example: STRING
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-value_type
+        fields:
+          items:
+            $ref: '#/components/schemas/IField'
+          minItems: 0
+          type: array
+          x-stoplight:
+            id: xxeeq1r8znmkr
+      required:
+      - id
+      - type
+      title: Input Field
+      type: object
+      x-stoplight:
+        id: aa89vbos7u7bt
+      x-internal: false
+      x-examples:
+      - title: Organisation
+        description: Which organisation should new leads come from.
+        type: input_field
+        id: organisation
+        default_value: My Organisation
+        depends_on:
+        - workspace
+        invalidates_input_fields: true
+        is_required: true
+        placeholder: Type your Organisation name here!
+        value_type: STRING
+      x-konfig-original-example:
+        title: Organisation
+        description: Which organisation should new leads come from.
+        type: input_field
+        id: organisation
+        default_value: My Organisation
+        depends_on:
+        - workspace
+        invalidates_input_fields: true
+        is_required: true
+        placeholder: Type your Organisation name here!
+        value_type: STRING
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field
+    JSON-Error:
+      example:
+        title: User Not Authenticated
+        status: "401"
+        code: unauthenticated
+        detail: User must be authenticated to access this resource
+        meta:
+          source: ZAPIER
+      properties:
+        title:
+          example: User Not Authenticated
+          type: string
+          x-konfig-original-example: User Not Authenticated
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-JSON-Error-properties-title
+        status:
+          example: "401"
+          pattern: "^\\d{3}"
+          type: string
+          x-konfig-original-example: "401"
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-JSON-Error-properties-status
+        code:
+          example: unauthenticated
+          type: string
+          x-konfig-original-example: unauthenticated
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-JSON-Error-properties-code
+        detail:
+          example: User must be authenticated to access this resource
+          type: string
+          x-konfig-original-example: User must be authenticated to access this resource
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-JSON-Error-properties-detail
+        meta:
+          $ref: '#/components/schemas/JSON_Error_meta'
+      title: JSON Error
+      type: object
+      x-examples:
+      - title: User Not Authenticated
+        status: "401"
+        code: unauthenticated
+        detail: User must be authenticated to access this resource
+        meta:
+          source: ZAPIER
+      x-konfig-original-example:
+        title: User Not Authenticated
+        status: "401"
+        code: unauthenticated
+        detail: User must be authenticated to access this resource
+        meta:
+          source: ZAPIER
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-JSON-Error
+    Output-Field:
+      description: "A field that is an output from an Action, often fields returned\
+        \ from a call to a Partner API."
+      properties:
+        title:
+          description: The title of this Output Field
+          example: First Name
+          type: string
+          x-konfig-original-example: First Name
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Output-Field-properties-title
+        type:
+          description: The type of this object.
+          readOnly: true
+          type: string
+        id:
+          example: first_name
+          type: string
+          x-stoplight:
+            id: k1d6ihtkkr55w
+          x-konfig-original-example: first_name
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Output-Field-properties-id
+        sample:
+          description: An optional sample of the data this Output Field might contain.
+          example: Wade
+          type: string
+          x-stoplight:
+            id: uksm0x6z9rtf8
+          x-konfig-original-example: Wade
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Output-Field-properties-sample
+      required:
+      - id
+      - title
+      - type
+      title: Output Field
+      type: object
+      x-stoplight:
+        id: s11ejctoftpqj
+      x-internal: false
+    Zap:
+      description: The definition of the Zap that will be created.
+      example:
+        title: My Zap
+        type: zap
+        id: 00000000-0000-c000-8000-000000012345X
+        is_enabled: true
+        last_successful_run_date: 2019-08-24T14:15:22Z
+        steps:
+        - title: null
+          action: uag:1f188536-6dd0-4172-8414-2b90914ddee9
+          inputs: {}
+          authentication: b3eYnwl
+        - title: null
+          action: uag:1f188536-6dd0-4172-8414-2b90914ddaa7
+          inputs: {}
+          authentication: BRn9rRg
+        links:
+          html_editor: https://zapier.com/webintent/edit-zap/00000000-0000-c000-8000-000000012345
+        updated_at: 2019-08-24T14:15:22Z
+      properties:
+        title:
+          description: The human readable name of the Zap.
+          example: My Zap
+          type: string
+          x-stoplight:
+            id: mpl1ssngg9udx
+          x-konfig-original-example: My Zap
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Zap-properties-title
+        type:
+          description: The type of this object.
+          example: zap
+          readOnly: true
+          type: string
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Zap-properties-type
+        id:
+          description: A unique identifier of the Zap.
+          example: 00000000-0000-c000-8000-000000012345
+          format: uuid
+          readOnly: true
+          type: string
+          x-stoplight:
+            id: l4qxuok0cmebd
+          x-konfig-original-example: 00000000-0000-c000-8000-000000012345
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Zap-properties-id
+        is_enabled:
+          default: true
+          description: Whether the Zap is enabled (running) or not.
+          example: true
+          type: boolean
+          x-stoplight:
+            id: fttr3poioh3a2
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Zap-properties-is_enabled
+        last_successful_run_date:
+          description: The date/time at which this Zap last ran sucessfully. A null
+            value indicates that a Zap has never run successfully.
+          format: date-time
+          readOnly: true
+          x-stoplight:
+            id: a9wvhqpq7jtna
+        steps:
+          description: An ordered list of steps that define the logic of the Zap.
+          items:
+            $ref: '#/components/schemas/Zap_steps_inner'
+          minItems: 2
+          type: array
+          uniqueItems: true
+          x-stoplight:
+            id: 6qmwdphlufjiy
+        updated_at:
+          example: 2019-08-24T14:15:22Z
+          format: date-time
+          pattern: "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+          readOnly: true
+          type: string
+          x-stoplight:
+            id: wowgqxucfqqgz
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Zap-properties-updated_at
+        links:
+          $ref: '#/components/schemas/Zap_links'
+      required:
+      - steps
+      - title
+      title: Zap
+      type: object
+      x-stoplight:
+        id: vw89ibjhro143
+      x-examples:
+      - title: My Zap
+        type: zap
+        id: 00000000-0000-c000-8000-000000012345X
+        is_enabled: true
+        last_successful_run_date: 2019-08-24T14:15:22Z
+        steps:
+        - action: uag:1f188536-6dd0-4172-8414-2b90914ddee9
+          inputs: {}
+          authentication: b3eYnwl
+        - action: uag:1f188536-6dd0-4172-8414-2b90914ddaa7
+          inputs: {}
+          authentication: BRn9rRg
+        links:
+          html_editor: https://zapier.com/webintent/edit-zap/00000000-0000-c000-8000-000000012345
+        updated_at: 2019-08-24T14:15:22Z
+      - title: My Zap
+        type: zap
+        id: 00000000-0000-c000-8000-000000012345
+        is_enabled: true
+        last_successful_run_date: 2019-08-24T14:15:22Z
+        steps:
+        - action:
+            title: New Deal
+            description: Triggers when a new deal is created.
+            type: action
+            id: uag:1f188536-6dd0-4172-8414-2b90914ddee9
+            action_type: READ
+            app:
+              title: HubSpot
+              description: HubSpot is your all-in-one stop for all of your marketing
+                software needs.
+              type: app
+              id: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaa
+              links:
+                connect_new_authentication: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+              categories:
+              - slug: marketing-automation
+              image: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+              images:
+                url_16x16: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+                url_32x32: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+                url_64x64: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+                url_128x128: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+              hex_color: 8bcbca
+          inputs: {}
+          authentication:
+            title: Hubspot (example@zapier.com)
+            type: authentication
+            id: b3eYnwl
+            app:
+              title: HubSpot
+              description: HubSpot is your all-in-one stop for all of your marketing
+                software needs.
+              type: app
+              id: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaa
+              links:
+                connect_new_authentication: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+              categories:
+              - slug: marketing-automation
+              image: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+              images:
+                url_16x16: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+                url_32x32: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+                url_64x64: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+                url_128x128: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+              hex_color: 8bcbca
+        - action:
+            title: Create Ad Statistics Report
+            description: Creates a report of Ad Statistics
+            type: action
+            id: uag:1f188536-6dd0-4172-8414-2b90914ddaa7
+            action_type: WRITE
+            app:
+              title: Facebook Lead Ads
+              description: Facebook lead ads make signing up for business information
+                easy for people and more valuable for businesses. The Facebook lead
+                ad app is useful for marketers who want to automate actions on their
+                leads.
+              type: app
+              id: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecaacc
+              url: https://api.zapier.com/v1/embed/apps/facebook-lead-ads-beta/integrations/facebook-lead-ads-beta
+              links:
+                connect_new_authentication: https://zapier.com/engine/auth/start/FacebookLeadAdsCLIAPI@1.6.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+              categories:
+              - slug: ads-conversion
+              image: https://zapier-images.imgix.net/storage/services/f407c31b217aac6e0cd4171092d53a8c_3.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+              images:
+                url_16x16: https://zapier-images.imgix.net/storage/services/f407c31b217aac6e0cd4171092d53a8c_3.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+                url_32x32: https://zapier-images.imgix.net/storage/services/f407c31b217aac6e0cd4171092d53a8c_3.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+                url_64x64: https://zapier-images.imgix.net/storage/services/f407c31b217aac6e0cd4171092d53a8c_3.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+                url_128x128: https://zapier-images.imgix.net/storage/services/f407c31b217aac6e0cd4171092d53a8c_3.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+              hex_color: 1878f3
+          inputs: {}
+          authentication:
+            title: Facebook Lead Ads (example@zapier.com)
+            type: authentication
+            id: BRn9rRg
+            app:
+              title: Facebook Lead Ads
+              description: Facebook lead ads make signing up for business information
+                easy for people and more valuable for businesses. The Facebook lead
+                ad app is useful for marketers who want to automate actions on their
+                leads.
+              type: app
+              id: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecaacc
+              url: https://api.zapier.com/v1/embed/apps/facebook-lead-ads-beta/integrations/facebook-lead-ads-beta
+              links:
+                connect_new_authentication: https://zapier.com/engine/auth/start/FacebookLeadAdsCLIAPI@1.6.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+              categories:
+              - slug: ads-conversion
+              image: https://zapier-images.imgix.net/storage/services/f407c31b217aac6e0cd4171092d53a8c_3.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+              images:
+                url_16x16: https://zapier-images.imgix.net/storage/services/f407c31b217aac6e0cd4171092d53a8c_3.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+                url_32x32: https://zapier-images.imgix.net/storage/services/f407c31b217aac6e0cd4171092d53a8c_3.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+                url_64x64: https://zapier-images.imgix.net/storage/services/f407c31b217aac6e0cd4171092d53a8c_3.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+                url_128x128: https://zapier-images.imgix.net/storage/services/f407c31b217aac6e0cd4171092d53a8c_3.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+              hex_color: 1878f3
+        links:
+          html_editor: https://zapier.com/webintent/edit-zap/00000000-0000-c000-8000-000000012345
+        updated_at: 2019-08-24T14:15:22Z
+      x-konfig-original-example:
+        title: My Zap
+        type: zap
+        id: 00000000-0000-c000-8000-000000012345X
+        is_enabled: true
+        last_successful_run_date: 2019-08-24T14:15:22Z
+        steps:
+        - action: uag:1f188536-6dd0-4172-8414-2b90914ddee9
+          inputs: {}
+          authentication: b3eYnwl
+        - action: uag:1f188536-6dd0-4172-8414-2b90914ddaa7
+          inputs: {}
+          authentication: BRn9rRg
+        links:
+          html_editor: https://zapier.com/webintent/edit-zap/00000000-0000-c000-8000-000000012345
+        updated_at: 2019-08-24T14:15:22Z
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-Zap
+    AuthenticationsCreateNewAuthenticationRequest:
+      properties:
+        data:
+          $ref: '#/components/schemas/AuthenticationsCreateNewAuthenticationRequest_data'
+      type: object
+    ActionsGetInputFieldsRequest:
+      properties:
+        data:
+          $ref: '#/components/schemas/InputsWithAuthenticationId'
+      type: object
+    ActionsGetOutputFieldsRequest:
+      properties:
+        data:
+          $ref: '#/components/schemas/InputsWithAuthenticationIdAndFetchLiveSamples'
+      type: object
+    ActionsGetChoicesRequest:
+      properties:
+        data:
+          $ref: '#/components/schemas/ActionsGetChoicesRequest_data'
+      required:
+      - data
+      type: object
+      x-examples:
+        Example 1:
+          data:
+            authentication: J2PlD7Rt
+            inputs:
+              worksheet: 123_nKsdw34
+    ZapsCreateZapRequest:
+      properties:
+        data:
+          $ref: '#/components/schemas/Zap'
+      required:
+      - data
+      type: object
+    ActionsTestActionExecutionRequest:
+      properties:
+        data:
+          $ref: '#/components/schemas/InputsWithAuthenticationIdNoPage'
+      type: object
+    ActionsListAvailableActionsResponse:
+      properties:
+        links:
+          $ref: '#/components/schemas/Links'
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          items:
+            $ref: '#/components/schemas/Action'
+          type: array
+          x-stoplight:
+            id: y66uevss99ldk
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    ActionsListAvailableActions404Response:
+      properties:
+        errors:
+          items:
+            $ref: '#/components/schemas/JSON-Error'
+          type: array
+      type: object
+      x-konfig-is-used-in-non-successful-response: true
+      x-do-not-generate: true
+    ActionsListAvailableActions406Response:
+      properties:
+        errors:
+          items:
+            $ref: '#/components/schemas/JSON-Error'
+          type: array
+      type: object
+      x-konfig-is-used-in-non-successful-response: true
+      x-do-not-generate: true
+    ActionsListAvailableActions415Response:
+      properties:
+        errors:
+          items:
+            $ref: '#/components/schemas/JSON-Error'
+          type: array
+      type: object
+      x-konfig-is-used-in-non-successful-response: true
+      x-do-not-generate: true
+    ActionsListAvailableActionsdefaultResponse:
+      properties:
+        errors:
+          items:
+            $ref: '#/components/schemas/JSON-Error'
+          type: array
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    AuthenticationsGetAvailableResponse:
+      properties:
+        links:
+          $ref: '#/components/schemas/Links'
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          items:
+            $ref: '#/components/schemas/Authentication'
+          type: array
+          x-stoplight:
+            id: 8xv9pjeka9p4w
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    AuthenticationsCreateNewAuthenticationResponse:
+      properties:
+        links:
+          $ref: '#/components/schemas/Links'
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          items:
+            $ref: '#/components/schemas/Authentication'
+          type: array
+          x-stoplight:
+            id: sp4f7twbjuyvt
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    ActionsGetInputFieldsResponse:
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          items:
+            $ref: '#/components/schemas/IF'
+          type: array
+          x-stoplight:
+            id: d12jbgm654li9
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    ActionsGetOutputFieldsResponse:
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          items:
+            $ref: '#/components/schemas/Output-Field'
+          type: array
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    ActionsGetChoicesResponse:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Choice'
+          type: array
+        meta:
+          $ref: '#/components/schemas/MetaWithPage'
+        links:
+          $ref: '#/components/schemas/LinksWithPage'
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    AppsListPopularResponse:
+      properties:
+        links:
+          $ref: '#/components/schemas/Links'
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          items:
+            $ref: '#/components/schemas/App'
+          type: array
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    AppsListPopular401Response:
+      properties:
+        errors:
+          items:
+            $ref: '#/components/schemas/JSON-Error'
+          type: array
+          x-stoplight:
+            id: vdmg3yluafenr
+      type: object
+      x-konfig-is-used-in-non-successful-response: true
+      x-do-not-generate: true
+    ExperimentalGetZapRunsResponse:
+      example:
+        Meta:
+          offset: 10
+          limit: 10
+          count: 133
+        data:
+        - start_time: 2023-12-01T06:29:10.36Z
+          end_time: 2023-12-01T06:29:10.36Z
+          id: 00946041-b63b-a34c-9c30-630c32f0c3a4
+          zap_title: Zap Title - New Item
+          steps:
+          - start_time: 2023-12-01T06:29:15.870509Z
+            status: delayed
+          - start_time: 2023-12-01T06:29:15.870509Z
+            status: delayed
+          data_out: data_out
+          status: delayed
+          data_in: data_in
+        - start_time: 2023-12-01T06:29:10.36Z
+          end_time: 2023-12-01T06:29:10.36Z
+          id: 00946041-b63b-a34c-9c30-630c32f0c3a4
+          zap_title: Zap Title - New Item
+          steps:
+          - start_time: 2023-12-01T06:29:15.870509Z
+            status: delayed
+          - start_time: 2023-12-01T06:29:15.870509Z
+            status: delayed
+          data_out: data_out
+          status: delayed
+          data_in: data_in
+        links:
+          next: https://api.zapier.com/v2/apps?offset=20&limit=10
+          prev: https://api.zapier.com/v2/apps?offset=0&limit=10
+      properties:
+        data:
+          description: The list of Zap Runs.
+          items:
+            $ref: '#/components/schemas/ZapRun'
+          type: array
+        links:
+          $ref: '#/components/schemas/Links'
+        Meta:
+          $ref: '#/components/schemas/Meta'
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    ExperimentalGetZapRuns401Response:
+      properties:
+        errors:
+          items:
+            $ref: '#/components/schemas/JSON-Error'
+          type: array
+      type: object
+      x-konfig-is-used-in-non-successful-response: true
+      x-do-not-generate: true
+    ExperimentalGetZapRuns403Response:
+      properties:
+        errors:
+          items:
+            $ref: '#/components/schemas/JSON-Error'
+          type: array
+      type: object
+      x-konfig-is-used-in-non-successful-response: true
+      x-do-not-generate: true
+    ZapsGetFilteredZapsResponse:
+      properties:
+        links:
+          $ref: '#/components/schemas/Links'
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          items:
+            $ref: '#/components/schemas/Zap'
+          type: array
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    ZapsGetFilteredZaps401Response:
+      properties:
+        errors:
+          items:
+            $ref: '#/components/schemas/JSON-Error'
+          type: array
+          x-stoplight:
+            id: vdmg3yluafenr
+      type: object
+      x-konfig-is-used-in-non-successful-response: true
+      x-do-not-generate: true
+    ZapsGetFilteredZaps403Response:
+      properties:
+        errors:
+          items:
+            $ref: '#/components/schemas/JSON-Error'
+          type: array
+      type: object
+      x-konfig-is-used-in-non-successful-response: true
+      x-do-not-generate: true
+    ZapsCreateZapResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/Zap'
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    ActionsTestActionExecutionResponse:
+      example:
+        ? ""
+        : ""
+      properties:
+        ? ""
+        : type: string
+          x-stoplight:
+            id: m15m1mdsk7bvc
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    ActionsTestActionExecution200Response:
+      properties:
+        data:
+          items:
+            type: object
+            x-stoplight:
+              id: x26i0e55dyp02
+          type: array
+          x-stoplight:
+            id: qlbm0e8jqc3ly
+        meta:
+          $ref: '#/components/schemas/Meta'
+        links:
+          $ref: '#/components/schemas/Links'
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    konfig-generated-schema-paths--actions-action-inputs-input-choices-parameters-0-schema:
+      example: uag:87b1c14e-ef30-43d5-9395-6c6514dbb123
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-paths--actions-action-inputs-input-choices-parameters-1-schema:
+      example: lead_id
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-paths--actions-action-inputs-input-choices-post-parameters-0-schema:
+      example: "1"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-paths--zap-runs-get-parameters-0-schema:
+      example: 2024-01-01T10:09:08.07
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-paths--zap-runs-get-parameters-1-schema:
+      example: 2023-01-02T11:10:09.08
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-paths--zap-runs-get-parameters-2-schema:
+      example: 001fa849-dc8e-aca6-a09b-ba705bceada1
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-paths--zap-runs-get-parameters-3-schema:
+      example: 10
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-paths--zap-runs-get-parameters-4-schema:
+      example: 10
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-paths--zap-runs-get-parameters-6-schema:
+      example: throttled
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-paths--zaps-get-parameters-3-schema:
+      example: steps.action
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-parameters-limit-schema:
+      example: 10
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-parameters-app-schema:
+      example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-parameters-action-schema:
+      example: uag:87b1c14e-ef30-43d5-9395-6c6514dbb123
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-parameters-action_type-schema:
+      example: READ
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InputsWithAuthenticationIdAndFetchLiveSamples-properties-fetch_live_samples:
+      example: false
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Links-properties-next:
+      example: https://api.zapier.com/v2/apps?offset=20&limit=10
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Links-properties-prev:
+      example: https://api.zapier.com/v2/apps?offset=0&limit=10
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Meta-properties-limit:
+      example: 10
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Meta-properties-offset:
+      example: 10
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Meta-properties-count:
+      example: 133
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-LinksWithPage-properties-next:
+      example: https://api.zapier.com/v2/actions/core:abcd/inputs/lead_id/choices?page=3
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-LinksWithPage-properties-prev:
+      example: https://api.zapier.com/v2/actions/core:abcd/inputs/lead_id/choices?page=1
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-MetaWithPage-properties-page:
+      example: 10
+      type: number
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InputsWithAuthenticationIdNoPage:
+      example:
+        authentication: BRn9rRg
+        inputs:
+          text: Hi there
+          channel: U036WM3E84D
+      properties:
+        authentication:
+          example: BRn9rRg
+          type: string
+        inputs:
+          properties:
+            text:
+              example: Hi there
+              type: string
+            channel:
+              example: U036WM3E84D
+              type: string
+          type: object
+      type: object
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-InputsWithAuthenticationIdNoPage-properties-authentication:
+      example: BRn9rRg
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-ZapRun-properties-id:
+      example: 00946041-b63b-a34c-9c30-630c32f0c3a4
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-ZapRun-properties-start_time:
+      example: 2023-12-01T06:29:10.360000+00:00
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-ZapRun-properties-end_time:
+      example: 2023-12-01T06:29:10.360000+00:00
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-ZapRun-properties-zap_title:
+      example: Zap Title - New Item
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-ZapRunStep-properties-start_time:
+      example: 2023-12-01T06:29:15.870509+00:00
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Action:
+      example:
+        title: New Lead
+        description: Triggers when a new lead is added to SuperExampleCRM
+        type: action
+        id: uag:1f188536-6dd0-4172-8414-2b90914ddee9X
+        key: new_lead
+        action_type: READ
+        app: 83b47c0e-adda-44da-a45d-42565fe521ef
+        is_instant: false
+      properties:
+        title:
+          example: New Lead
+          type: string
+        description:
+          example: Triggers when a new lead is added to SuperExampleCRM
+          type: string
+        type:
+          example: action
+          type: string
+        id:
+          example: uag:1f188536-6dd0-4172-8414-2b90914ddee9X
+          type: string
+        key:
+          example: new_lead
+          type: string
+        action_type:
+          example: READ
+          type: string
+        app:
+          example: 83b47c0e-adda-44da-a45d-42565fe521ef
+          type: string
+        is_instant:
+          example: false
+          type: boolean
+      type: object
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Action-properties-title:
+      example: New Lead
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Action-properties-description:
+      example: Triggers when a new lead is added to SuperExampleCRM
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Action-properties-type:
+      example: action
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Action-properties-id:
+      example: uag:1f188536-6dd0-4172-8414-2b90914ddee9
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Action-properties-key:
+      example: new_lead
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Action-properties-action_type:
+      example: READ
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Action-properties-app-oneOf-0:
+      example: 83b47c0e-adda-44da-a45d-42565fe521ef
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Action-properties-is_instant:
+      example: false
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App:
+      example:
+        title: HubSpot
+        description: HubSpot is your all-in-one stop for all of your marketing software
+          needs.
+        type: app
+        id: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaaX
+        categories:
+        - slug: marketing-automation
+        hex_color: 8bcbca
+        image: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+        images:
+          url_16x16: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+          url_32x32: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+          url_64x64: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+          url_128x128: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+        links:
+          connect_new_authentication: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+      properties:
+        title:
+          example: HubSpot
+          type: string
+        description:
+          example: HubSpot is your all-in-one stop for all of your marketing software
+            needs.
+          type: string
+        type:
+          example: app
+          type: string
+        id:
+          example: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaaX
+          type: string
+        categories:
+          items:
+            properties:
+              slug:
+                example: marketing-automation
+                type: string
+            type: object
+          type: array
+        hex_color:
+          example: 8bcbca
+          type: string
+        image:
+          example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+          type: string
+        images:
+          properties:
+            url_16x16:
+              example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+              type: string
+            url_32x32:
+              example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+              type: string
+            url_64x64:
+              example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+              type: string
+            url_128x128:
+              example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+              type: string
+          type: object
+        links:
+          properties:
+            connect_new_authentication:
+              example: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+              type: string
+          type: object
+      type: object
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App-properties-title:
+      example: HubSpot
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App-properties-description:
+      example: HubSpot is your all-in-one stop for all of your marketing software
+        needs.
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App-properties-type:
+      example: app
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App-properties-id:
+      example: 1e4fcbf4-d80b-4ec3-b33b-c085f1ecbbaa
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App-properties-categories-items-properties-slug:
+      example: marketing-automation
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App-properties-hex_color:
+      example: 8bcbca
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App-properties-image:
+      example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&ixlib=python-3.0.0&q=50
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App-properties-images-properties-url_16x16:
+      example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App-properties-images-properties-url_32x32:
+      example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App-properties-images-properties-url_64x64:
+      example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App-properties-images-properties-url_128x128:
+      example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-App-properties-links-properties-connect_new_authentication:
+      example: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Authentication:
+      example:
+        title: SuperExampleCRM (example@zapier.com)
+        type: authentication
+        id: b3eYnwlX
+        app: b61ae76e-487b-4622-8679-df3d3e20bccc
+        is_expired: false
+      properties:
+        title:
+          example: SuperExampleCRM (example@zapier.com)
+          type: string
+        type:
+          example: authentication
+          type: string
+        id:
+          example: b3eYnwlX
+          type: string
+        app:
+          example: b61ae76e-487b-4622-8679-df3d3e20bccc
+          type: string
+        is_expired:
+          example: false
+          type: boolean
+      type: object
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Authentication-properties-title:
+      example: SuperExampleCRM (example@zapier.com)
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Authentication-properties-type:
+      example: authentication
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Authentication-properties-id:
+      example: b3eYnwl
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Authentication-properties-app-oneOf-0:
+      example: b61ae76e-487b-4622-8679-df3d3e20bccc
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Authentication-properties-is_expired:
+      example: false
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Choice:
+      example:
+        type: choice
+        id: usaX
+        label: United States of America
+        value: usa
+      properties:
+        type:
+          example: choice
+          type: string
+        id:
+          example: usaX
+          type: string
+        label:
+          example: United States of America
+          type: string
+        value:
+          example: usa
+          type: string
+      type: object
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Choice-properties-type:
+      example: choice
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Choice-properties-id:
+      example: usa
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Choice-properties-label:
+      example: United States of America
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Choice-properties-value:
+      example: usa
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Fieldset-properties-title:
+      example: Invoice
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Fieldset-properties-id:
+      example: invoice
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Info-Field-properties-description:
+      example: Note that you can _only_ respond within 24 hours of a message sent
+        by a user.
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Info-Field-properties-id:
+      example: response_msg
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field:
+      example:
+        title: Organisation
+        description: Which organisation should new leads come from.
+        type: input_field
+        id: organisation
+        default_value: My Organisation
+        depends_on:
+        - workspace
+        invalidates_input_fields: true
+        is_required: true
+        placeholder: Type your Organisation name here!
+        value_type: STRING
+      properties:
+        title:
+          example: Organisation
+          type: string
+        description:
+          example: Which organisation should new leads come from.
+          type: string
+        type:
+          example: input_field
+          type: string
+        id:
+          example: organisation
+          type: string
+        default_value:
+          example: My Organisation
+          type: string
+        depends_on:
+          items:
+            example: workspace
+            type: string
+          type: array
+        invalidates_input_fields:
+          example: true
+          type: boolean
+        is_required:
+          example: true
+          type: boolean
+        placeholder:
+          example: Type your Organisation name here!
+          type: string
+        value_type:
+          example: STRING
+          type: string
+      type: object
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field-properties-title:
+      example: Organisation
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field-properties-description:
+      example: Which organisation should new leads come from.
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field-properties-type:
+      example: input_field
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field-properties-id:
+      example: organisation
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field-properties-default_value:
+      example: My Organisation
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field-properties-depends_on-items:
+      example: workspace
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field-properties-format:
+      example: MULTILINE
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field-properties-invalidates_input_fields:
+      example: true
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field-properties-is_required:
+      example: true
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field-properties-items-properties-type:
+      example: STRING
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field-properties-placeholder:
+      example: Type your Organisation name here!
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Input-Field-properties-value_type:
+      example: STRING
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-JSON-Error:
+      example:
+        title: User Not Authenticated
+        status: "401"
+        code: unauthenticated
+        detail: User must be authenticated to access this resource
+        meta:
+          source: ZAPIER
+      properties:
+        title:
+          example: User Not Authenticated
+          type: string
+        status:
+          example: "401"
+          type: string
+        code:
+          example: unauthenticated
+          type: string
+        detail:
+          example: User must be authenticated to access this resource
+          type: string
+        meta:
+          properties:
+            source:
+              example: ZAPIER
+              type: string
+          type: object
+      type: object
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-JSON-Error-properties-title:
+      example: User Not Authenticated
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-JSON-Error-properties-status:
+      example: "401"
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-JSON-Error-properties-code:
+      example: unauthenticated
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-JSON-Error-properties-detail:
+      example: User must be authenticated to access this resource
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-JSON-Error-properties-meta-properties-source:
+      example: ZAPIER
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Output-Field-properties-title:
+      example: First Name
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Output-Field-properties-id:
+      example: first_name
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Output-Field-properties-sample:
+      example: Wade
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Zap:
+      example:
+        title: My Zap
+        type: zap
+        id: 00000000-0000-c000-8000-000000012345X
+        is_enabled: true
+        last_successful_run_date: 2019-08-24T14:15:22Z
+        steps:
+        - title: null
+          action: uag:1f188536-6dd0-4172-8414-2b90914ddee9
+          inputs: {}
+          authentication: b3eYnwl
+        - title: null
+          action: uag:1f188536-6dd0-4172-8414-2b90914ddaa7
+          inputs: {}
+          authentication: BRn9rRg
+        links:
+          html_editor: https://zapier.com/webintent/edit-zap/00000000-0000-c000-8000-000000012345
+        updated_at: 2019-08-24T14:15:22Z
+      properties:
+        title:
+          example: My Zap
+          type: string
+        type:
+          example: zap
+          type: string
+        id:
+          example: 00000000-0000-c000-8000-000000012345X
+          type: string
+        is_enabled:
+          example: true
+          type: boolean
+        last_successful_run_date:
+          example: 2019-08-24T14:15:22Z
+          type: string
+        steps:
+          items:
+            properties:
+              title:
+                nullable: true
+                type: string
+                x-konfig-null-placeholder: true
+              action:
+                example: uag:1f188536-6dd0-4172-8414-2b90914ddee9
+                type: string
+              inputs:
+                properties: {}
+                type: object
+              authentication:
+                example: b3eYnwl
+                type: string
+            type: object
+          type: array
+        links:
+          properties:
+            html_editor:
+              example: https://zapier.com/webintent/edit-zap/00000000-0000-c000-8000-000000012345
+              type: string
+          type: object
+        updated_at:
+          example: 2019-08-24T14:15:22Z
+          type: string
+      type: object
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Zap-properties-title:
+      example: My Zap
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Zap-properties-type:
+      example: zap
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Zap-properties-id:
+      example: 00000000-0000-c000-8000-000000012345
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Zap-properties-is_enabled:
+      example: true
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Zap-properties-steps-items-properties-action-oneOf-0:
+      example: uag:1f188536-6dd0-4172-8414-2b90914ddee9
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Zap-properties-steps-items-properties-authentication-oneOf-0:
+      example: b3eYnwl
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Zap-properties-updated_at:
+      example: 2019-08-24T14:15:22Z
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-Zap-properties-links-properties-html_editor:
+      example: https://zapier.com/webintent/edit-zap/00000000-0000-c000-8000-000000012345
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-AuthenticationsCreateNewAuthenticationRequest-properties-data-properties-title:
+      example: SuperExampleCRM (example@zapier.com)
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-AuthenticationsCreateNewAuthenticationRequest-properties-data-properties-app:
+      example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-ActionsGetChoicesRequest-properties-data-properties-authentication:
+      example: J2PlD7Rt
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-single-parameter-schema-get--actions:
+      properties:
+        app:
+          example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+          format: uuid
+          type: string
+          x-konfig-original-example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+          x-konfig-generated-schema: konfig-generated-schema-components-parameters-app-schema
+        action_type:
+          enum:
+          - READ
+          - WRITE
+          example: READ
+          type: string
+          x-konfig-original-example: READ
+          x-konfig-generated-schema: konfig-generated-schema-components-parameters-action_type-schema
+      required:
+      - action_type
+      - app
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - app
+      - action_type
+    konfig-generated-schema-single-parameter-schema-get--authentications:
+      properties:
+        app:
+          example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+          format: uuid
+          type: string
+          x-konfig-original-example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+          x-konfig-generated-schema: konfig-generated-schema-components-parameters-app-schema
+        limit:
+          default: 10
+          example: 10
+          type: integer
+          x-konfig-original-example: 10
+          x-konfig-generated-schema: konfig-generated-schema-components-parameters-limit-schema
+        offset:
+          type: integer
+      required:
+      - app
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - app
+      - limit
+      - offset
+    konfig-generated-schema-single-parameter-schema-post--authentications:
+      properties:
+        data:
+          properties:
+            title:
+              description: The title of the authentication.
+              example: SuperExampleCRM (example@zapier.com)
+              maxLength: 255
+              type: string
+              x-stoplight:
+                id: qsah1luqpw3aw
+              x-konfig-original-example: SuperExampleCRM (example@zapier.com)
+              x-konfig-generated-schema: konfig-generated-schema-components-schemas-AuthenticationsCreateNewAuthenticationRequest-properties-data-properties-title
+            app:
+              description: "A canonical App ID, as provided by the `/apps` endpoint."
+              example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+              format: uuid
+              type: string
+              x-stoplight:
+                id: 4t3xjr9hkys93
+              x-konfig-original-example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+              x-konfig-generated-schema: konfig-generated-schema-components-schemas-AuthenticationsCreateNewAuthenticationRequest-properties-data-properties-app
+            authentication_fields:
+              description: Required values to create an authentication. These values
+                will be used by the target integration to successfully create the
+                Authentication https://platform.zapier.com/build/auth.
+              type: object
+              x-stoplight:
+                id: qjdjpcuahd3ah
+          required:
+          - app
+          - authentication_fields
+          - title
+          type: object
+          x-stoplight:
+            id: ikchkp3loucw7
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+    konfig-generated-schema-single-parameter-schema-post--actions-action-inputs:
+      properties:
+        data:
+          $ref: '#/components/schemas/InputsWithAuthenticationId'
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+    konfig-generated-schema-single-parameter-schema-post--actions-action-outputs:
+      properties:
+        data:
+          $ref: '#/components/schemas/InputsWithAuthenticationIdAndFetchLiveSamples'
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+    konfig-generated-schema-single-parameter-schema-post--actions-action-inputs-input-choices:
+      properties:
+        page:
+          default: "1"
+          example: "1"
+          type: string
+          x-konfig-original-example: "1"
+          x-konfig-generated-schema: konfig-generated-schema-paths--actions-action-inputs-input-choices-post-parameters-0-schema
+        data:
+          properties:
+            authentication:
+              example: J2PlD7Rt
+              type: string
+              x-konfig-generated-schema: konfig-generated-schema-components-schemas-ActionsGetChoicesRequest-properties-data-properties-authentication
+            inputs:
+              type: object
+          required:
+          - authentication
+          type: object
+      required:
+      - data
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - page
+    konfig-generated-schema-single-parameter-schema-get--apps:
+      properties:
+        limit:
+          type: integer
+        offset:
+          type: integer
+        category:
+          type: string
+        query:
+          type: string
+        ids:
+          type: string
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - limit
+      - offset
+      - category
+      - query
+      - ids
+    konfig-generated-schema-single-parameter-schema-get--zap-runs:
+      properties:
+        from_date:
+          example: 2024-01-01T10:09:08.07
+          type: string
+          x-konfig-original-example: 2024-01-01T10:09:08.07
+          x-konfig-generated-schema: konfig-generated-schema-paths--zap-runs-get-parameters-0-schema
+        to_date:
+          example: 2023-01-02T11:10:09.08
+          type: string
+          x-konfig-original-example: 2023-01-02T11:10:09.08
+          x-konfig-generated-schema: konfig-generated-schema-paths--zap-runs-get-parameters-1-schema
+        zap_id:
+          example: 001fa849-dc8e-aca6-a09b-ba705bceada1
+          type: string
+          x-konfig-original-example: 001fa849-dc8e-aca6-a09b-ba705bceada1
+          x-konfig-generated-schema: konfig-generated-schema-paths--zap-runs-get-parameters-2-schema
+        limit:
+          example: 10
+          type: integer
+          x-konfig-original-example: 10
+          x-konfig-generated-schema: konfig-generated-schema-paths--zap-runs-get-parameters-3-schema
+        offset:
+          example: 10
+          type: integer
+          x-konfig-original-example: 10
+          x-konfig-generated-schema: konfig-generated-schema-paths--zap-runs-get-parameters-4-schema
+        search:
+          maxLength: 150
+          type: string
+        statuses:
+          enum:
+          - delayed
+          - scheduled
+          - pending
+          - error
+          - error_handled
+          - halted
+          - throttled
+          - held
+          - filtered
+          - skipped
+          - success
+          example: throttled
+          type: string
+          x-konfig-original-example: throttled
+          x-konfig-generated-schema: konfig-generated-schema-paths--zap-runs-get-parameters-6-schema
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - from_date
+      - to_date
+      - zap_id
+      - limit
+      - offset
+      - search
+      - statuses
+    konfig-generated-schema-single-parameter-schema-get--zaps:
+      properties:
+        limit:
+          type: integer
+        offset:
+          type: integer
+        inputs:
+          additionalProperties:
+            type: string
+          type: object
+        expand:
+          example: steps.action
+          type: string
+          x-konfig-original-example: steps.action
+          x-konfig-generated-schema: konfig-generated-schema-paths--zaps-get-parameters-3-schema
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - limit
+      - offset
+      - inputs
+      - expand
+    konfig-generated-schema-single-parameter-schema-post--zaps:
+      properties:
+        expand:
+          type: string
+        data:
+          $ref: '#/components/schemas/Zap'
+      required:
+      - data
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter:
+      - expand
+    konfig-generated-schema-single-parameter-schema-post--actions-action-test:
+      properties:
+        data:
+          $ref: '#/components/schemas/InputsWithAuthenticationIdNoPage'
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+    IField:
+      description: "A field that is an input to an Action, often eventually used to\
+        \ form the HTTP request that is made to a Partner API."
+      example:
+        title: Organisation
+        description: Which organisation should new leads come from.
+        type: input_field
+        id: organisation
+        default_value: My Organisation
+        depends_on:
+        - workspace
+        invalidates_input_fields: true
+        is_required: true
+        placeholder: Type your Organisation name here!
+        value_type: STRING
+      properties:
+        title:
+          description: The title of this Input Field
+          example: Organisation
+          type: string
+          x-stoplight:
+            id: jwgnpz282do20
+          x-konfig-original-example: Organisation
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-title
+        description:
+          description: "A longer markdown formatted description of this Input Field,\
+            \ often containing helpful hints on how to fill this particular field\
+            \ in."
+          example: Which organisation should new leads come from.
+          type: string
+          x-stoplight:
+            id: hrthwkkkz1ee9
+          x-konfig-original-example: Which organisation should new leads come from.
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-description
+        type:
+          description: The type of this object.
+          enum:
+          - input_field
+          - info_field
+          - fieldset
+          example: input_field
+          readOnly: true
+          type: string
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-type
+        id:
+          example: organisation
+          type: string
+          x-stoplight:
+            id: ptld3gl2q0z84
+          x-konfig-original-example: organisation
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-id
+        default_value:
+          description: The default value of this Input Field
+          example: My Organisation
+          type: string
+          x-konfig-original-example: My Organisation
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-default_value
+        depends_on:
+          description: "An array of ids that this field has a dependency on. If the\
+            \ value of these fields changes, the value of this field is no longer\
+            \ valid."
+          items:
+            example: workspace
+            type: string
+            x-stoplight:
+              id: e8nq7zmnf1yp0
+            x-konfig-original-example: workspace
+            x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-depends_on-items
+          type: array
+          x-stoplight:
+            id: g08w2x7p8m8j0
+        format:
+          description: "An optional formatting hint, only provided when the `value_type`\
+            \ field is `STRING`. Useful for displaying more friendly inputs to a user.\
+            \ If the format is `SELECT`, you are expected to fetch the possible Choices\
+            \ from the `/choices` endpoint."
+          enum:
+          - DATETIME
+          - MULTILINE
+          - PASSWORD
+          - CODE
+          - FILE
+          - SELECT
+          example: MULTILINE
+          type: string
+          x-stoplight:
+            id: 26jrzyp6b8qte
+          x-konfig-original-example: MULTILINE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-format
+        invalidates_input_fields:
+          description: "If true, changes to this field invalidate the presence of\
+            \ all other fields for this action and they must be refetched."
+          example: true
+          type: boolean
+          x-stoplight:
+            id: 6dmhtkigi6928
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-invalidates_input_fields
+        is_required:
+          description: "If true, this field must be filled in for the action to execute."
+          example: true
+          type: boolean
+          x-stoplight:
+            id: cf6yq2dcpjoik
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-is_required
+        items:
+          $ref: '#/components/schemas/Input_Field_items'
+        placeholder:
+          description: A placeholder for this Input Field.
+          example: Type your Organisation name here!
+          type: string
+          x-konfig-original-example: Type your Organisation name here!
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-placeholder
+        value_type:
+          description: The type of this Input Field. The `OBJECT` type accepts a flat
+            key-value dictionary where the values can only be strings. The `ARRAY`
+            type accepts an array of values - see `items` for the type. All other
+            types accept string values.
+          enum:
+          - STRING
+          - NUMBER
+          - INTEGER
+          - BOOLEAN
+          - ARRAY
+          - OBJECT
+          example: STRING
+          type: string
+          x-stoplight:
+            id: h9w5rc9ncwdqg
+          x-konfig-original-example: STRING
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-value_type
+        fields:
+          items:
+            $ref: '#/components/schemas/IField'
+          minItems: 0
+          type: array
+          x-stoplight:
+            id: xxeeq1r8znmkr
+      required:
+      - id
+      - type
+      title: Input Field
+      type: object
+      x-stoplight:
+        id: aa89vbos7u7bt
+      x-internal: false
+      x-examples:
+      - title: Organisation
+        description: Which organisation should new leads come from.
+        type: input_field
+        id: organisation
+        default_value: My Organisation
+        depends_on:
+        - workspace
+        invalidates_input_fields: true
+        is_required: true
+        placeholder: Type your Organisation name here!
+        value_type: STRING
+      x-konfig-original-example:
+        title: Organisation
+        description: Which organisation should new leads come from.
+        type: input_field
+        id: organisation
+        default_value: My Organisation
+        depends_on:
+        - workspace
+        invalidates_input_fields: true
+        is_required: true
+        placeholder: Type your Organisation name here!
+        value_type: STRING
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field
+    IF:
+      description: "A field that is an input to an Action, often eventually used to\
+        \ form the HTTP request that is made to a Partner API."
+      example:
+        title: Organisation
+        description: Which organisation should new leads come from.
+        type: input_field
+        id: organisation
+        default_value: My Organisation
+        depends_on:
+        - workspace
+        invalidates_input_fields: true
+        is_required: true
+        placeholder: Type your Organisation name here!
+        value_type: STRING
+      properties:
+        title:
+          description: The title of this Input Field
+          example: Organisation
+          type: string
+          x-stoplight:
+            id: jwgnpz282do20
+          x-konfig-original-example: Organisation
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-title
+        description:
+          description: "A longer markdown formatted description of this Input Field,\
+            \ often containing helpful hints on how to fill this particular field\
+            \ in."
+          example: Which organisation should new leads come from.
+          type: string
+          x-stoplight:
+            id: hrthwkkkz1ee9
+          x-konfig-original-example: Which organisation should new leads come from.
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-description
+        type:
+          description: The type of this object.
+          enum:
+          - input_field
+          - info_field
+          - fieldset
+          example: input_field
+          readOnly: true
+          type: string
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-type
+        id:
+          example: organisation
+          type: string
+          x-stoplight:
+            id: ptld3gl2q0z84
+          x-konfig-original-example: organisation
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-id
+        default_value:
+          description: The default value of this Input Field
+          example: My Organisation
+          type: string
+          x-konfig-original-example: My Organisation
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-default_value
+        depends_on:
+          description: "An array of ids that this field has a dependency on. If the\
+            \ value of these fields changes, the value of this field is no longer\
+            \ valid."
+          items:
+            example: workspace
+            type: string
+            x-stoplight:
+              id: e8nq7zmnf1yp0
+            x-konfig-original-example: workspace
+            x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-depends_on-items
+          type: array
+          x-stoplight:
+            id: g08w2x7p8m8j0
+        format:
+          description: "An optional formatting hint, only provided when the `value_type`\
+            \ field is `STRING`. Useful for displaying more friendly inputs to a user.\
+            \ If the format is `SELECT`, you are expected to fetch the possible Choices\
+            \ from the `/choices` endpoint."
+          enum:
+          - DATETIME
+          - MULTILINE
+          - PASSWORD
+          - CODE
+          - FILE
+          - SELECT
+          example: MULTILINE
+          type: string
+          x-stoplight:
+            id: 26jrzyp6b8qte
+          x-konfig-original-example: MULTILINE
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-format
+        invalidates_input_fields:
+          description: "If true, changes to this field invalidate the presence of\
+            \ all other fields for this action and they must be refetched."
+          example: true
+          type: boolean
+          x-stoplight:
+            id: 6dmhtkigi6928
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-invalidates_input_fields
+        is_required:
+          description: "If true, this field must be filled in for the action to execute."
+          example: true
+          type: boolean
+          x-stoplight:
+            id: cf6yq2dcpjoik
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-is_required
+        items:
+          $ref: '#/components/schemas/Input_Field_items'
+        placeholder:
+          description: A placeholder for this Input Field.
+          example: Type your Organisation name here!
+          type: string
+          x-konfig-original-example: Type your Organisation name here!
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-placeholder
+        value_type:
+          description: The type of this Input Field. The `OBJECT` type accepts a flat
+            key-value dictionary where the values can only be strings. The `ARRAY`
+            type accepts an array of values - see `items` for the type. All other
+            types accept string values.
+          enum:
+          - STRING
+          - NUMBER
+          - INTEGER
+          - BOOLEAN
+          - ARRAY
+          - OBJECT
+          example: STRING
+          type: string
+          x-stoplight:
+            id: h9w5rc9ncwdqg
+          x-konfig-original-example: STRING
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-value_type
+        fields:
+          items:
+            $ref: '#/components/schemas/IField'
+          minItems: 0
+          type: array
+          x-stoplight:
+            id: xxeeq1r8znmkr
+      required:
+      - id
+      - type
+      title: Input Field
+      type: object
+      x-stoplight:
+        id: aa89vbos7u7bt
+      x-internal: false
+      x-examples:
+      - title: Organisation
+        description: Which organisation should new leads come from.
+        type: input_field
+        id: organisation
+        default_value: My Organisation
+        depends_on:
+        - workspace
+        invalidates_input_fields: true
+        is_required: true
+        placeholder: Type your Organisation name here!
+        value_type: STRING
+      x-konfig-original-example:
+        title: Organisation
+        description: Which organisation should new leads come from.
+        type: input_field
+        id: organisation
+        default_value: My Organisation
+        depends_on:
+        - workspace
+        invalidates_input_fields: true
+        is_required: true
+        placeholder: Type your Organisation name here!
+        value_type: STRING
+      x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field
+    App_categories_inner:
+      properties:
+        slug:
+          example: marketing-automation
+          type: string
+          x-konfig-original-example: marketing-automation
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-App-properties-categories-items-properties-slug
+      type: object
+      x-stoplight:
+        id: zul06vozqt2gq
+    App_images:
+      description: Images/icons of various resolutions to represent the app.
+      properties:
+        url_16x16:
+          example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+          format: uri
+          type: string
+          x-konfig-original-example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=16&ixlib=python-3.0.0&q=50&w=16
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-App-properties-images-properties-url_16x16
+        url_32x32:
+          example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+          format: uri
+          type: string
+          x-konfig-original-example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=32&ixlib=python-3.0.0&q=50&w=32
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-App-properties-images-properties-url_32x32
+        url_64x64:
+          example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+          format: uri
+          type: string
+          x-konfig-original-example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=64&ixlib=python-3.0.0&q=50&w=64
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-App-properties-images-properties-url_64x64
+        url_128x128:
+          example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+          format: uri
+          type: string
+          x-konfig-original-example: https://zapier-images.imgix.net/storage/developer/cde9764aa8d19fdd6d591455dbe5a78d.png?auto=format%2Ccompress&fit=crop&h=128&ixlib=python-3.0.0&q=50&w=128
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-App-properties-images-properties-url_128x128
+      type: object
+    App_links:
+      properties:
+        connect_new_authentication:
+          description: |-
+            A url that, when visited, will direct the user to authenticate with the app and allow Zapier access to the app, thus creating a new Authentication.
+
+            If value is `null`, then no authentication is required to use the app.
+          example: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+          format: uri
+          x-stoplight:
+            id: lkvty8v9do3ot
+          x-konfig-original-example: https://zapier.com/engine/auth/start/HubSpotCLIAPI@1.7.1?redirect=https%3A%2F%2Fapi.zapier.com%2Fv2%2Fauthentications%2Fredirect
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-App-properties-links-properties-connect_new_authentication
+      type: object
+    Input_Field_items:
+      properties:
+        type:
+          description: Only set when `type` is `ARRAY`. Specifies the `type` of the
+            elements of the array.
+          enum:
+          - STRING
+          - NUMBER
+          - INTEGER
+          - BOOLEAN
+          example: STRING
+          type: string
+          x-stoplight:
+            id: 36jutnzad1vni
+          x-konfig-original-example: STRING
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Input-Field-properties-items-properties-type
+      type: object
+      x-stoplight:
+        id: x60ayzr6dil0w
+    JSON_Error_meta:
+      properties:
+        source:
+          enum:
+          - ZAPIER
+          - THIRD_PARTY
+          example: ZAPIER
+          readOnly: true
+          type: string
+          x-stoplight:
+            id: 1xvz8q83ku44e
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-JSON-Error-properties-meta-properties-source
+      type: object
+      x-stoplight:
+        id: 7dafj9ijy9rbh
+    Zap_steps_inner:
+      properties:
+        title:
+          description: "The custom title of a Zap Step. If a step has not been given\
+            \ a custom title by the user, then the value will be null."
+          readOnly: true
+          x-stoplight:
+            id: vk6hcwjt56em9
+        action: {}
+        inputs:
+          type: object
+          x-stoplight:
+            id: v7n5ic7azuqwv
+        authentication: {}
+      required:
+      - action
+      - authentication
+      - inputs
+      type: object
+      x-stoplight:
+        id: 7e9kkmuykf25n
+    Zap_links:
+      properties:
+        html_editor:
+          description: A link to open this Zap in the Zapier editor.
+          example: https://zapier.com/webintent/edit-zap/00000000-0000-c000-8000-000000012345
+          format: uri
+          readOnly: true
+          type: string
+          x-stoplight:
+            id: 6xn8sd4td5xox
+          x-konfig-original-example: https://zapier.com/webintent/edit-zap/00000000-0000-c000-8000-000000012345
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-Zap-properties-links-properties-html_editor
+      type: object
+      x-stoplight:
+        id: uhxxzqjelbfwj
+    AuthenticationsCreateNewAuthenticationRequest_data:
+      properties:
+        title:
+          description: The title of the authentication.
+          example: SuperExampleCRM (example@zapier.com)
+          maxLength: 255
+          type: string
+          x-stoplight:
+            id: qsah1luqpw3aw
+          x-konfig-original-example: SuperExampleCRM (example@zapier.com)
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-AuthenticationsCreateNewAuthenticationRequest-properties-data-properties-title
+        app:
+          description: "A canonical App ID, as provided by the `/apps` endpoint."
+          example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+          format: uuid
+          type: string
+          x-stoplight:
+            id: 4t3xjr9hkys93
+          x-konfig-original-example: 868f9d3c-2ea0-4f19-a32d-a61b276ab8de
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-AuthenticationsCreateNewAuthenticationRequest-properties-data-properties-app
+        authentication_fields:
+          description: Required values to create an authentication. These values will
+            be used by the target integration to successfully create the Authentication
+            https://platform.zapier.com/build/auth.
+          type: object
+          x-stoplight:
+            id: qjdjpcuahd3ah
+      required:
+      - app
+      - authentication_fields
+      - title
+      type: object
+      x-stoplight:
+        id: ikchkp3loucw7
+    ActionsGetChoicesRequest_data:
+      properties:
+        authentication:
+          example: J2PlD7Rt
+          type: string
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-ActionsGetChoicesRequest-properties-data-properties-authentication
+        inputs:
+          type: object
+      required:
+      - authentication
+      type: object
+  securitySchemes:
+    OAuth2:
+      description: "Contact Zapier support for your Client ID and Secret. More details\
+        \ are available [here](https://platform.zapier.com/embed/partner-api)."
+      flows:
+        authorizationCode:
+          authorizationUrl: https://zapier.com/oauth/authorize/
+          refreshUrl: https://zapier.com/oauth/token/
+          scopes:
+            profile: Read profile information about the currently-authenticated user
+            zap: Read Zaps
+            zap:write: Write Zaps
+            authentication: Read Authentications
+            authentication:write: Write Authentications
+            zap:runs: Read Zap Runs
+          tokenUrl: https://zapier.com/oauth/token/
+        implicit:
+          authorizationUrl: https://zapier.com/oauth/authorize/
+          scopes:
+            profile: Read profile information about the currently-authenticated user
+            zap: Read Zaps
+            zap:write: Write Zaps
+            authentication: Read Authentications
+            authentication:write: Write Authentications
+            zap:runs: Read Zap Runs
+      type: oauth2
+      x-konfig-globally-required-security: false
+x-stoplight:
+  id: v4f9fwzq9hclo
+
